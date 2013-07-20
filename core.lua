@@ -126,7 +126,7 @@ function kLoot:Auction_Create(item)
 	if not id then return end
 	self:Debug('kLoot:Auction_Create', id, 3) 
 	local auctionId = self:GetUniqueId(self.auctions)
-	self:Debug('kLoot:Auction_Create', 'auctionId', auctionId, 1)
+	self:Debug('kLoot:Auction_Create', 'New auctionId', auctionId, 1)
 end
 
 --[[ Add vote to bid
