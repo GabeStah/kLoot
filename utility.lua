@@ -138,3 +138,16 @@ function kLoot:SplitString(subject, delimiter)
 	table.insert( result, string.sub( subject, from  ) )
 	return result
 end
+function kLoot:GetUniqueId(data)
+	local newId
+	local isValidId = false
+	while isValidId == false do
+		local matchFound = false
+		newId = (math.random(0,2147483647) * -1)
+		for i,val in pairs(data) do
+			if val.id == newId then matchFound = true end
+		end
+		if not matchFound then isValidId = true end
+	end
+	return newId
+end

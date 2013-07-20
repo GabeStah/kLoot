@@ -9,6 +9,7 @@ kLoot.version = '0.0.100';
 kLoot.versions = {};
 kLoot.autoLootZoneSelected = 1
 kLoot.autoLootWhitelistItemSelected = 1
+kLoot.auctions = {}
 
 kLoot.defaults = {
 	profile = {
