@@ -7,3 +7,7 @@ local kLoot = _G.kLoot
 function kLoot:PLAYER_ENTERING_WORLD()
 	RegisterAddonMessagePrefix("kLoot")
 end
+
+function kLoot:Event_OnZoneChanged()
+	self:Debug('Event_OnZoneChanged', GetRealZoneText(), 1)
+end

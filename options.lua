@@ -18,6 +18,9 @@ kLoot.defaults = {
 			whitelist = {},
 			zones = {},
 		},
+		cvars = {
+			matureLanguageFilterEnabled = false,
+		},		
 		debug = {
 			enabled = false,
 			threshold = 1,
@@ -36,8 +39,37 @@ kLoot.defaults = {
 			},
 			temp = {},
 		},
-		cvars = {
-			matureLanguageFilterEnabled = false,
+		settings = {
+			raid = {
+				active = false,
+			},
+		},
+		vcp = {
+			raiders = {
+				"Blastphemus",
+				"Deaf",
+				"Dougallxin",
+				"Gartzarnn",
+				"Guddz",
+				"Kainhighwind",
+				"Kulldar",
+				"Rorke",
+				"Shaylana",
+				"Takaoni",
+				"Tree",
+			},
+		},
+		zones = {
+			validZones = {
+				"Baradin Hold",
+				"Blackrock Mountain: Blackwing Descent",
+				"Firelands",
+				"The Bastion of Twilight",
+				"Throne of the Four Winds",
+				"Dragon Soul",
+				"Throne of Thunder",
+			},
+			zoneSelected = 1,
 		},
 	},
 };

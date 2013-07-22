@@ -33,7 +33,10 @@ function kLoot:InitializeSettings()
 end
 
 function kLoot:InitializeEvents()
-	self:RegisterEvent("LOOT_OPENED")
+	self:RegisterEvent('LOOT_OPENED')
+	self:RegisterEvent('ZONE_CHANGED', 'Event_OnZoneChanged')
+	self:RegisterEvent('ZONE_CHANGED_INDOORS', 'Event_OnZoneChanged')
+	self:RegisterEvent('ZONE_CHANGED_NEW_AREA', 'Event_OnZoneChanged')
 end
 
 function kLoot:LOOT_OPENED(event, ...)
@@ -79,17 +82,27 @@ Raid management
 return boolean - Raid active status.
 ]]
 function kLoot:Raid_IsRaidActive()
-	return self.settings.raid.active
+	return self.db.profile.settings.raid.active
 end
 
 -- Set the active status of the raid
 function kLoot:Raid_SetRaidStatus(status)
-	self.settings.raid.active = status or false
+	self.db.profile.settings.raid.active = status or false
 end
 
 -- Toggle the active status of the raid
 function kLoot:Raid_ToggleRaidStatus()
-	self.settings.raid.active = not self.settings.raid.active
+	self.db.profile.settings.raid.active = not self.db.profile.settings.raid.active
+end
+
+function kLoot:Raid_IsValidZone()
+	for iZone,vZone in pairs(self.db.profile.zones.validZones) do
+		if self.currentZone == vZone then return true end
+	end
+end
+
+function kLoot:Raid_SetZone()
+	self.currentZone = GetRealZoneText()	
 end
 
 --[[ Manually auction an item via /kl auction item
