@@ -124,11 +124,31 @@ function kLoot:OnUpdate(index, elapsed)
 		end
 	end
 end
+function kLoot:ColorToHex(color)
+	if not color or not type(color) == 'table' then return end
+	return string.format("%02x%02x%02x", 
+		self:Round(color.r * 255),
+		self:Round(color.g * 255),
+		self:Round(color.b * 255)
+	)
+end
 function kLoot:RGBToHex(r, g, b)
+	if type(r) == 'table' then
+		g = r.g
+		b = r.b
+		r = r.r		
+	end
 	r = r <= 255 and r >= 0 and r or 0
 	g = g <= 255 and g >= 0 and g or 0
 	b = b <= 255 and b >= 0 and b or 0
 	return string.format("%02x%02x%02x", r, g, b)
+end
+function kLoot:Round(value, decimal)
+	if (decimal) then
+		return math.floor((value * 10^decimal) + 0.5) / (10^decimal)
+	else
+		return math.floor(value+0.5)
+	end
 end
 function kLoot:SplitString(subject, delimiter)
 	local result = { }

@@ -11,6 +11,13 @@ kLoot.autoLootZoneSelected = 1
 kLoot.autoLootWhitelistItemSelected = 1
 kLoot.auctions = {}
 kLoot.roster = {}
+kLoot.color = {
+	red = {r=1, g=0, b=0},
+	green = {r=0, g=1, b=0},
+	blue = {r=0, g=0, b=1},
+	purple = {r=1, g=0, b=1},
+	yellow = {r=1, g=1, b=0},
+}
 
 kLoot.defaults = {
 	profile = {

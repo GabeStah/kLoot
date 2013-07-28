@@ -8,5 +8,15 @@
 embeds.xml
 core.lua
 options.lua
+actor.lua
+auction.lua
+bid.lua
 events.lua
+guild.lua
+item.lua
+manual.lua
+raid.lua
+role.lua
+roster.lua
 utility.lua
+view.lua
