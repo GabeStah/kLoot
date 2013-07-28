@@ -10,7 +10,6 @@ kLoot.versions = {};
 kLoot.autoLootZoneSelected = 1
 kLoot.autoLootWhitelistItemSelected = 1
 kLoot.auctions = {}
-kLoot.roster = {}
 kLoot.color = {
 	red = {r=1, g=0, b=0},
 	green = {r=0, g=1, b=0},
@@ -18,6 +17,8 @@ kLoot.color = {
 	purple = {r=1, g=0, b=1},
 	yellow = {r=1, g=1, b=0},
 }
+kLoot.roster = {}
+kLoot.timeSinceLastUpdate = 0
 
 kLoot.defaults = {
 	profile = {
@@ -31,6 +32,7 @@ kLoot.defaults = {
 		},		
 		debug = {
 			enabled = false,
+			enableTimers = true,
 			threshold = 1,
 		},
 		editors = {
@@ -52,6 +54,7 @@ kLoot.defaults = {
 			raid = {
 				active = nil,
 			},
+			updateInterval = 1,
 		},
 		vcp = {
 			raiders = {
@@ -117,6 +120,13 @@ kLoot.options = {
 					desc = 'Toggle Debug mode',
 					set = function(info,value) kLoot.db.profile.debug.enabled = value end,
 					get = function(info) return kLoot.db.profile.debug.enabled end,
+				},
+				enableTimers = {
+					name = 'Enable Timers',
+					type = 'toggle',
+					desc = 'Toggle timer enabling',
+					set = function(info,value) kLoot.db.profile.debug.enableTimers = value end,
+					get = function(info) return kLoot.db.profile.debug.enableTimers end,
 				},
 				threshold = {
 					name = 'Threshold',

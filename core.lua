@@ -42,9 +42,10 @@ function kLoot:OnInitialize()
 	-- Init Events
 	self:InitializeEvents()
 	-- Init Settings
-	kLoot:InitializeSettings()
+	self:InitializeSettings()
 	self.updateFrame = CreateFrame("Frame", "kLootUpdateFrame", UIParent);
 	kLootUpdateFrame:SetScript("OnUpdate", function(frame,elapsed) kLoot:OnUpdate(1, elapsed) end)
+	self:InitializeTimers()
 end
 
 function kLoot:InitializeSettings()
@@ -59,6 +60,11 @@ function kLoot:InitializeEvents()
 	self:RegisterEvent('ZONE_CHANGED', 'Event_OnZoneChanged')
 	self:RegisterEvent('ZONE_CHANGED_INDOORS', 'Event_OnZoneChanged')
 	self:RegisterEvent('ZONE_CHANGED_NEW_AREA', 'Event_OnZoneChanged')
+end
+
+function kLoot:InitializeTimers()
+	-- Create roster update timer
+	self:Timer_RosterUpdate()
 end
 
 function kLoot:LOOT_OPENED(event, ...)

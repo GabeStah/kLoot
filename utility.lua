@@ -38,18 +38,6 @@ function kLoot:GetPlayerCount(groupType)
 		return GetNumSubgroupMembers() - 1;
 	end
 end
-function kLoot:CreateTimer(f,t,r,...)
-	local v, i;
-	if type(f) == 'string' then
-		kLoot:Debug("CreateTimer func "..f, 1)
-	end
-	if r then -- repeater
-		v  = {id = self:GetUniqueTimerId(), interval = t, func = f, rep = r, args = ...}
-	else
-		v  = {id = self:GetUniqueTimerId(), time = GetTime() + t, func = f, rep = r, args = ...}
-	end
-	table.insert(self.timers, v);
-end
 function kLoot:Debug(...)
 	local isDevLoaded = IsAddOnLoaded('_Dev')
 	local isSpewLoaded = IsAddOnLoaded('Spew')
@@ -73,55 +61,60 @@ function kLoot:Error(...)
 	self:Print(ChatFrame1, ('Error: %s - %s'):format(...))
 end
 function kLoot:OnUpdate(index, elapsed)
-	local time, i = GetTime();
-	for i = #self.timers, 1, -1 do 
-		-- Check if repeater
-		if self.timers[i].rep then
-			self.timers[i].elapsed = (self.timers[i].elapsed or 0) + elapsed;
-			if self.timers[i].elapsed >= (self.timers[i].interval or 0) then
-				local cancelTimer = false;
-				-- Check if func is string
-				if type(self.timers[i].func) == 'function' then
-					if self.timers[i].args then
-						cancelTimer = self.timers[i].func(unpack(self.timers[i].args));
-					else
-						cancelTimer = self.timers[i].func();
-					end
-				else
-					if self.timers[i].args then
-						cancelTimer = self[self.timers[i].func](unpack(self.timers[i].args));
-					else
-						cancelTimer = self[self.timers[i].func]();
-					end
-				end
-				self.timers[i].elapsed = 0;
-				-- Check if cancel required
-				if cancelTimer then
-					self:Debug("REMOVE FUNC", 1)
-					tremove(self.timers, i)
-				end
-			end
-		else
-			if self.timers[i].time then
-				if self.timers[i].time <= time then
-					-- One-time exec, remove
+	if not self.db.profile.debug.enableTimers then return end
+	local time, i = GetTime()
+	self.timeSinceLastUpdate = self.timeSinceLastUpdate + elapsed
+	if (self.timeSinceLastUpdate > self.db.profile.settings.updateInterval) then	
+		for i = #self.timers, 1, -1 do 
+			-- Check if repeater
+			if self.timers[i].loop then
+				self.timers[i].elapsed = (self.timers[i].elapsed or 0) + self.timeSinceLastUpdate
+				if self.timers[i].elapsed >= (self.timers[i].time or 0) then
+					local cancelTimer = false;
+					-- Check if func is string
 					if type(self.timers[i].func) == 'function' then
 						if self.timers[i].args then
-							self.timers[i].func(unpack(self.timers[i].args));
+							cancelTimer = self.timers[i].func(unpack(self.timers[i].args));
 						else
-							self.timers[i].func();
+							cancelTimer = self.timers[i].func();
 						end
 					else
 						if self.timers[i].args then
-							self[self.timers[i].func](unpack(self.timers[i].args));
+							cancelTimer = self[self.timers[i].func](unpack(self.timers[i].args));
 						else
-							self[self.timers[i].func]();
+							cancelTimer = self[self.timers[i].func]();
 						end
 					end
-					tremove(self.timers, i)
+					self.timers[i].elapsed = 0;
+					-- Check if cancel required
+					if cancelTimer then
+						self:Debug("REMOVE FUNC", 1)
+						tremove(self.timers, i)
+					end
+				end
+			else
+				if self.timers[i].time then
+					if self.timers[i].time <= time then
+						-- One-time exec, remove
+						if type(self.timers[i].func) == 'function' then
+							if self.timers[i].args then
+								self.timers[i].func(unpack(self.timers[i].args));
+							else
+								self.timers[i].func();
+							end
+						else
+							if self.timers[i].args then
+								self[self.timers[i].func](unpack(self.timers[i].args));
+							else
+								self[self.timers[i].func]();
+							end
+						end
+						tremove(self.timers, i)
+					end
 				end
 			end
 		end
+		self.timeSinceLastUpdate = 0
 	end
 end
 function kLoot:ColorToHex(color)

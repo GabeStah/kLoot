@@ -79,11 +79,11 @@ function kLoot:Raid_Get(raid)
 		return self:Raid_Get(self:Raid_GetActive())
 	end
 	if type(raid) == 'string' then
-		self:Debug('Raid_Get', 'type(raid) == string', raid, 1)
+		--self:Debug('Raid_Get', 'type(raid) == string', raid, 1)
 		raid = tonumber(raid)
 	end
 	if type(raid) == 'number' then
-		self:Debug('Raid_Get', 'type(raid) == number', raid, 1)
+		--self:Debug('Raid_Get', 'type(raid) == number', raid, 1)
 		for i,v in pairs(self.db.profile.raids) do
 			if v.id and v.id == raid then
 				self:Debug('Raid_Get', 'Raid by id match found:', raid, v, 1)
@@ -93,7 +93,7 @@ function kLoot:Raid_Get(raid)
 	elseif type(raid) == 'table' then
 		--self:Debug('Raid_Get', 'type(raid) == table', raid, 1)
 		if raid.type and raid.type == 'raid' then
-			self:Debug('Raid_Get', 'raid.type == raid', raid.type, 1)
+			--self:Debug('Raid_Get', 'raid.type == raid', raid.type, 1)
 			return raid
 		end
 	end
@@ -174,7 +174,7 @@ function kLoot:Raid_Start()
 		-- Active raid
 		-- Continue existing raid?
 		-- TODO: Prompt dialog to continue raid		
-		self:View_PromptResumeRaid()
+		kLoot:View_PromptResumeRaid()
 	else
 		-- No active raid
 		-- Create new raid
@@ -186,18 +186,18 @@ end
 --[[ Update the raid roster
 ]]
 function kLoot:Raid_UpdateRoster(raid)
-	local raid = self:Raid_Get(raid or self.db.profile.settings.raid.active)
+	local raid = kLoot:Raid_Get(raid)
 	if not raid then
-		self:Debug('Raid_UpdateRoster', 'No raid found:', raid, 1)
+		kLoot:Debug('Raid_UpdateRoster', 'No raid found:', raid, 1)
 		return
 	end
 	-- Rebuild roster
-	self:Roster_Rebuild()
+	kLoot:Roster_Rebuild()
 	-- Loop through full roster, update or add as needed
-	for name,actor in pairs(self.roster.full) do
+	for name,actor in pairs(kLoot.roster.full) do
 		if raid.actors[name] then
-			self:Debug('Raid_UpdateRoster', 'Updating actor:', name, 1)
-			self:Actor_Update(
+			kLoot:Debug('Raid_UpdateRoster', 'Updating actor:', name, 1)
+			kLoot:Actor_Update(
 				raid, 
 				actor.name, 
 				actor.class, 
@@ -206,8 +206,8 @@ function kLoot:Raid_UpdateRoster(raid)
 				actor.events[#actor.events].time,
 				actor.guildNote) 
 		else
-			self:Debug('Raid_UpdateRoster', 'Creating actor:', name, 1)
-			raid.actors[name] = self:Actor_Create(
+			kLoot:Debug('Raid_UpdateRoster', 'Creating actor:', name, 1)
+			raid.actors[name] = kLoot:Actor_Create(
 				actor.name, 
 				actor.class, 
 				actor.events[#actor.events].online, 
