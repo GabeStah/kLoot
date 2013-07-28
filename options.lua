@@ -10,6 +10,7 @@ kLoot.versions = {};
 kLoot.autoLootZoneSelected = 1
 kLoot.autoLootWhitelistItemSelected = 1
 kLoot.auctions = {}
+kLoot.roster = {}
 
 kLoot.defaults = {
 	profile = {
@@ -39,9 +40,10 @@ kLoot.defaults = {
 			},
 			temp = {},
 		},
+		raids = {},
 		settings = {
 			raid = {
-				active = false,
+				active = nil,
 			},
 		},
 		vcp = {
@@ -253,6 +255,15 @@ kLoot.options = {
 			end,
 			guiHidden = true,
         },    
+        raid = {
+			type = 'execute',
+			name = 'raid',
+			desc = 'Start or stop a raid - /kl raid [keyword] - start, begin, stop, end',
+			func = function(...) 
+				kLoot:Manual_Raid(...)
+			end,
+			guiHidden = true,			
+		},
         version = {
 			type = 'execute',
 			name = 'Version',

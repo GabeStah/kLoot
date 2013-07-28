@@ -68,6 +68,10 @@ function kLoot:Debug(...)
 		end
 	end
 end
+function kLoot:Error(...)
+	if not ... then return end
+	self:Print(ChatFrame1, ('Error: %s - %s'):format(...))
+end
 function kLoot:OnUpdate(index, elapsed)
 	local time, i = GetTime();
 	for i = #self.timers, 1, -1 do 
@@ -137,6 +141,9 @@ function kLoot:SplitString(subject, delimiter)
 	end
 	table.insert( result, string.sub( subject, from  ) )
 	return result
+end
+function kLoot:GetPlayerCount()
+	return (GetNumGroupMembers() > 0) and GetNumGroupMembers() or 1
 end
 function kLoot:GetUniqueId(data)
 	local newId
