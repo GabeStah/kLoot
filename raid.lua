@@ -18,10 +18,10 @@ local kLoot = _G.kLoot
 
 --[[ Create a new raid instance in database
 ]]
-function kLoot:Raid_Create()
+function kLoot:Raid_New()
 	-- Verify role
 	if not self:Role_IsAdmin() then
-		self:Error('Raid_Create', 'Invalid permission to create raid.')
+		self:Error('Raid_New', 'Invalid permission to create raid.')
 		return
 	end
 	local id = self:GetUniqueId(self.db.profile.raids)
@@ -29,14 +29,15 @@ function kLoot:Raid_Create()
 	self:Roster_Rebuild()
 	-- Create empty raid table
 	tinsert(self.db.profile.raids, {
-		actors = self.roster.full,	
+		actors = self.roster.full,
+		auctions = {},
 		id = id,
 		time = time(),
 		type = 'raid',
 	})
 	-- Bump active raid
 	self.db.profile.settings.raid.active = id
-	self:Debug('Raid_Create', 'Raid created.', 3)
+	self:Debug('Raid_New', 'Raid created.', 3)
 end
 
 --[[ Destroy an existing raid instance in database
@@ -61,11 +62,11 @@ end
 function kLoot:Raid_GenerateRoster()
 	local count, roster, currentTime, name, class, online = self:GetPlayerCount(), {}, time()
 	if count == 1 then
-		roster[UnitName('player')] = self:Actor_Create(UnitName('player'), UnitClass('player'), true, true, currentTime)
+		roster[UnitName('player')] = self:Actor_New(UnitName('player'), UnitClass('player'), true, true, currentTime)
 	else
 		for i=1,count do
 			name, _, _, _, class, _, _, online = GetRaidRosterInfo(i)
-			roster[name] = self:Actor_Create(name, class, online and true or false, true, currentTime)
+			roster[name] = self:Actor_New(name, class, online and true or false, true, currentTime)
 		end	
 	end
 	return roster
@@ -178,7 +179,7 @@ function kLoot:Raid_Start()
 	else
 		-- No active raid
 		-- Create new raid
-		kLoot:Raid_Create()
+		kLoot:Raid_New()
 	end
 	-- Create active raid
 end
@@ -207,7 +208,7 @@ function kLoot:Raid_UpdateRoster(raid)
 				actor.guildNote) 
 		else
 			kLoot:Debug('Raid_UpdateRoster', 'Creating actor:', name, 1)
-			raid.actors[name] = kLoot:Actor_Create(
+			raid.actors[name] = kLoot:Actor_New(
 				actor.name, 
 				actor.class, 
 				actor.events[#actor.events].online, 

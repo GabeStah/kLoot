@@ -12,14 +12,32 @@ end
 
 --[[ Create new auction
 ]]
-function kLoot:Auction_Create(item)
-	if not item then return end
+function kLoot:Auction_New(item, raid)
+	if not item then
+		self:Error('Auction_New', 'Attempt to auction null item.')
+		return
+	end
+	raid = self:Raid_Get(raid)
+	if not raid then
+		self:Error('Auction_New', 'Cannot create auction without valid active raid.')
+		return
+	end
 	-- Validate role
-	if (not self:Role_IsAdmin()) and (not self:Role_IsEditor()) then return end
+	if (not self:Role_IsAdmin()) and (not self:Role_IsEditor()) then
+		self:Error('Auction_New', 'Invalid permission to create new Auction.')
+		return
+	end
 	-- Parse item id
-	local id = self:Item_Id(item)
-	if not id then return end
-	self:Debug('kLoot:Auction_Create', id, 3) 
+	local itemId = self:Item_Id(item)
+	if not itemId then return end
 	local auctionId = self:GetUniqueId(self.auctions)
-	self:Debug('kLoot:Auction_Create', 'New auctionId', auctionId, 1)
+	self:Debug('Auction_New', 'New auctionId', auctionId, 1)
+	-- TODO: Complete
+	tinsert(raid.auctions, {
+		bids = {},
+		id = auctionId,
+		itemId = itemId,
+		createdTime = time(),
+	})
+	self:Debug('Auction_New', 'Auction creation complete.', itemId, 3)
 end

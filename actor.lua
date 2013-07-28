@@ -7,7 +7,7 @@ local kLoot = _G.kLoot
 
 --[[ Create new Actor entry
 ]]
-function kLoot:Actor_Create(name, class, online, inRaid, time, guildNote)
+function kLoot:Actor_New(name, class, online, inRaid, time, guildNote)
 	return {
 		class = class,					
 		events = {

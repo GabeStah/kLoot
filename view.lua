@@ -119,7 +119,7 @@ function kLoot:View_PromptResumeRaid()
 	end)
 	self:View_CreateDialogButton('new', 'New Raid', dialog, function()
 		kLoot:Raid_Destroy()
-		kLoot:Raid_Create()
+		kLoot:Raid_New()
 		dialog.Close()
 	end)
 end

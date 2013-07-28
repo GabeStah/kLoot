@@ -12,5 +12,5 @@ end
 
 --[[ Create new bid
 ]]
-function kLoot:Bid_Create(auction)
+function kLoot:Bid_New(auction)
 end

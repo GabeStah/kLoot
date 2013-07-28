@@ -7,7 +7,7 @@ local kLoot = _G.kLoot
 
 --[[ Create and initialize a new timer
 ]]
-function kLoot:Timer_Create(func,time,loop,...)
+function kLoot:Timer_New(func,time,loop,...)
 	if type(func) == 'string' then
 		self:Debug('CreateTimer', 'New timer function:', func, 1)
 	end
@@ -15,5 +15,5 @@ function kLoot:Timer_Create(func,time,loop,...)
 end
 
 function kLoot:Timer_RosterUpdate()
-	self:Timer_Create('Raid_UpdateRoster', 10, true)
+	self:Timer_New('Raid_UpdateRoster', 10, true)
 end
