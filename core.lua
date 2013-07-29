@@ -44,13 +44,34 @@ function kLoot:OnInitialize()
 	-- Init Settings
 	self:InitializeSettings()
 	self.updateFrame = CreateFrame("Frame", "kLootUpdateFrame", UIParent);
-	kLootUpdateFrame:SetScript("OnUpdate", function(frame,elapsed) kLoot:OnUpdate(1, elapsed) end)
+	kLootUpdateFrame:SetScript("OnUpdate", function(self, elapsed) 
+		kLoot:Auction_OnUpdate(elapsed)
+		kLoot:OnUpdate(elapsed)
+	end)
 	self:InitializeTimers()
 end
 
 function kLoot:InitializeSettings()
-	self.settings = self.settings or {}
-	self.settings.raid = self.settings.raid or {}
+	-- Version
+	self.minRequiredVersion = '0.0.100'
+	self.version = '0.0.100'	
+
+	self.autoLootZoneSelected = 1
+	self.autoLootWhitelistItemSelected = 1
+	self.auctions = {}
+	self.color = {
+		red = {r=1, g=0, b=0},
+		green = {r=0, g=1, b=0},
+		blue = {r=0, g=0, b=1},
+		purple = {r=1, g=0, b=1},
+		yellow = {r=1, g=1, b=0},
+	}	
+	self.roster = {}
+	self.update = {}
+	self.update.auction = {}
+	self.update.core = {}
+	self.versions = {}	
+	
 	-- Mature language filter
 	BNSetMatureLanguageFilter(self.db.profile.cvars.matureLanguageFilterEnabled)
 end

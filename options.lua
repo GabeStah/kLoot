@@ -4,24 +4,12 @@ local math, tostring, string, strjoin, strlen, strlower, strsplit, strsub, strtr
 local select, pairs, print, next, type, unpack = select, pairs, print, next, type, unpack
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
-kLoot.minRequiredVersion = '0.0.100';
-kLoot.version = '0.0.100';
-kLoot.versions = {};
-kLoot.autoLootZoneSelected = 1
-kLoot.autoLootWhitelistItemSelected = 1
-kLoot.auctions = {}
-kLoot.color = {
-	red = {r=1, g=0, b=0},
-	green = {r=0, g=1, b=0},
-	blue = {r=0, g=0, b=1},
-	purple = {r=1, g=0, b=1},
-	yellow = {r=1, g=1, b=0},
-}
-kLoot.roster = {}
-kLoot.timeSinceLastUpdate = 0
 
 kLoot.defaults = {
 	profile = {
+		auction = {
+			duration = 25,
+		},
 		autoloot = {
 			enabled = false,
 			whitelist = {},
@@ -51,10 +39,17 @@ kLoot.defaults = {
 		},
 		raids = {},
 		settings = {
+			update = {
+				auction = {
+					interval = 1,
+				},
+				core = {
+					interval = 1,
+				},
+			},
 			raid = {
 				active = nil,
 			},
-			updateInterval = 1,
 		},
 		vcp = {
 			raiders = {
@@ -143,6 +138,25 @@ kLoot.options = {
 				},
 			},
 			cmdHidden = true,
+		},
+		auctionGroup = {
+			name = 'Auction',
+			type = 'group',
+			args = {
+				duration = {
+					name = 'Auction Duration',
+					desc = 'Default auction timeout length.',
+					type = 'range',
+					min = 5,
+					max = 120,
+					step = 1,
+					set = function(info,value)
+						kLoot.db.profile.auction.duration = value
+					end,
+					get = function(info) return kLoot.db.profile.auction.duration end,
+					order = 2,
+				},	
+			},
 		},
 		autoloot = {
 			name = 'Auto-Loot',

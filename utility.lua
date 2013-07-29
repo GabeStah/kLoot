@@ -60,15 +60,16 @@ function kLoot:Error(...)
 	if not ... then return end
 	self:Print(ChatFrame1, ('Error: %s - %s'):format(...))
 end
-function kLoot:OnUpdate(index, elapsed)
+function kLoot:OnUpdate(elapsed)
 	if not self.db.profile.debug.enableTimers then return end
+	local updateType = 'core'
 	local time, i = GetTime()
-	self.timeSinceLastUpdate = self.timeSinceLastUpdate + elapsed
-	if (self.timeSinceLastUpdate > self.db.profile.settings.updateInterval) then	
+	self.update[updateType].timeSince = (self.update[updateType].timeSince or 0) + elapsed
+	if (self.update[updateType].timeSince > self.db.profile.settings.update[updateType].interval) then	
 		for i = #self.timers, 1, -1 do 
 			-- Check if repeater
 			if self.timers[i].loop then
-				self.timers[i].elapsed = (self.timers[i].elapsed or 0) + self.timeSinceLastUpdate
+				self.timers[i].elapsed = (self.timers[i].elapsed or 0) + self.update[updateType].timeSince
 				if self.timers[i].elapsed >= (self.timers[i].time or 0) then
 					local cancelTimer = false;
 					-- Check if func is string
@@ -114,7 +115,7 @@ function kLoot:OnUpdate(index, elapsed)
 				end
 			end
 		end
-		self.timeSinceLastUpdate = 0
+		self.update[updateType].timeSince = 0
 	end
 end
 function kLoot:ColorToHex(color)
