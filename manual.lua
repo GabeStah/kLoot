@@ -12,7 +12,7 @@ function kLoot:Manual_Auction(input)
 	if type(input) == 'table' then
 		-- Check if manual input field exists
 		if input['input'] then
-			local found, _, itemString = string.find(input['input'], "^auction%s(.+)")
+			local found, _, itemString = string.find(input['input'], "^auction%s+(.+)")
 			input = itemString
 		else
 			input = select(1, input)
@@ -30,7 +30,7 @@ function kLoot:Manual_Bid(input)
 	if type(input) == 'table' then
 		-- Check if manual input field exists
 		if input['input'] then
-			local found, _, itemString = string.find(input['input'], "^auction%s(.+)")
+			local found, _, itemString = string.find(input['input'], "^bid%s+(.+)")
 			input = itemString
 		else
 			input = select(1, input)
@@ -38,7 +38,7 @@ function kLoot:Manual_Bid(input)
 	end
 	if type(input) == 'string' then input = strtrim(input) end
 	-- Send to Auction_New
-	self:Auction_New(input)
+	self:Bid_New(self:Auction_ByItem(input))
 end
 
 --[[ Manually start or stop a raid via /kl raid [stop/start/begin/end]

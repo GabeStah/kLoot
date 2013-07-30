@@ -16,30 +16,6 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
---[[ Create a new raid instance in database
-]]
-function kLoot:Raid_New()
-	-- Verify role
-	if not self:Role_IsAdmin() then
-		self:Error('Raid_New', 'Invalid permission to create raid.')
-		return
-	end
-	local id = self:GetUniqueId(self.db.profile.raids)
-	-- Rebuild roster
-	self:Roster_Rebuild()
-	-- Create empty raid table
-	tinsert(self.db.profile.raids, {
-		actors = self.roster.full,
-		auctions = {},
-		id = id,
-		time = time(),
-		type = 'raid',
-	})
-	-- Bump active raid
-	self.db.profile.settings.raid.active = id
-	self:Debug('Raid_New', 'Raid created.', 3)
-end
-
 --[[ Destroy an existing raid instance in database
 TODO: Complete function
 ]]
@@ -72,7 +48,7 @@ function kLoot:Raid_GenerateRoster()
 	return roster
 end
 
---[[ Get Raid by id or raid object
+--[[ Get Raid by id or raid object, most recent if not specified
 ]]
 function kLoot:Raid_Get(raid)
 	if not raid then -- assume active raid
@@ -124,6 +100,30 @@ function kLoot:Raid_IsValidZone()
 	for i,v in pairs(self.db.profile.zones.validZones) do
 		if self.currentZone == v then return true end
 	end
+end
+
+--[[ Create a new raid instance in database
+]]
+function kLoot:Raid_New()
+	-- Verify role
+	if not self:Role_IsAdmin() then
+		self:Error('Raid_New', 'Invalid permission to create raid.')
+		return
+	end
+	local id = self:GetUniqueId(self.db.profile.raids)
+	-- Rebuild roster
+	self:Roster_Rebuild()
+	-- Create empty raid table
+	tinsert(self.db.profile.raids, {
+		actors = self.roster.full,
+		auctions = {},
+		id = id,
+		time = time(),
+		type = 'raid',
+	})
+	-- Bump active raid
+	self.db.profile.settings.raid.active = id
+	self:Debug('Raid_New', 'Raid created.', 3)
 end
 
 --[[ Rebuild temporary raid roster

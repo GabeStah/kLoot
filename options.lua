@@ -93,9 +93,18 @@ kLoot.options = {
 		auction = {
 			type = 'execute',
 			name = 'auction',
-			desc = 'Create an auction',
+			desc = 'Create an auction.',
 			func = function(...) 
 				kLoot:Manual_Auction(...)
+			end,
+			guiHidden = true,			
+		},
+		bid = {
+			type = 'execute',
+			name = 'bid',
+			desc = 'Create a bid.',
+			func = function(...) 
+				kLoot:Manual_Bid(...)
 			end,
 			guiHidden = true,			
 		},

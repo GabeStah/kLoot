@@ -8,6 +8,23 @@ local kLoot = _G.kLoot
 --[[ Award an active auction
 ]]
 function kLoot:Auction_Award(auction)
+	-- TODO: Complete
+end
+
+--[[ Get Auction object by item
+]]
+function kLoot:Auction_ByItem(item)
+	-- Parse item
+	item = self:Item_Id(item)
+	if not item then return end
+	-- Active raid
+	local raid = self:Raid_Get()
+	if not raid then return end
+	for i = #raid.auctions, 1, -1 do
+		if raid.auctions[i].itemId == item then
+			return raid.auctions[i]
+		end
+	end
 end
 
 --[[ Close auction and process
@@ -19,12 +36,15 @@ function kLoot:Auction_Close(auction)
 		return
 	end
 	if auction.closed then return end
-	
+	-- Award auction
+	self:Auction_Award(auction)
 	-- Set as closed
 	auction.closed = true
 	self:Debug('Auction_Close', 'Closing auction.', auction, 3)
 end
 
+--[[ Get Auction by id or object, most recent if not specified
+]]
 function kLoot:Auction_Get(auction)
 	local raid = self:Raid_Get()
 	if not auction then -- assume most recent auction of active raid
@@ -39,6 +59,10 @@ function kLoot:Auction_Get(auction)
 	end
 	if type(auction) == 'number' then
 		self:Debug('Auction_Get', 'type(auction) == number', auction, 1)
+		if not raid then
+			self:Debug('Auction_Get', 'type(auction) == number, invalid raid.', 2)
+			return
+		end		
 		for iAuction,vAuction in pairs(raid.auctions) do
 			if vAuction.id and vAuction.id == auction then
 				self:Debug('Auction_Get', 'auction by id match found:', auction, vAuction, 1)
@@ -74,9 +98,8 @@ function kLoot:Auction_New(item, raid)
 	-- Parse item id
 	local itemId = self:Item_Id(item)
 	if not itemId then return end
-	local auctionId = self:GetUniqueId(self.auctions)
+	local auctionId = self:GetUniqueId(raid.auctions)
 	self:Debug('Auction_New', 'New auctionId', auctionId, 1)
-	-- TODO: Complete
 	tinsert(raid.auctions, {
 		bids = {},
 		closed = false,		
