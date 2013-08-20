@@ -67,7 +67,7 @@ function kLoot:Bid_New(auction, items, player, bidType, specialization)
 		return
 	end
 	player = player or UnitName('player')
-	bidType = bidType or self:GetTableEntry(self.bidTypes)
+	bidType = bidType or self:GetTableEntry(self.bidTypes, nil, true)
 	specialization = specialization or self:GetTableEntry(self.specializations)
 	
 	if not items then

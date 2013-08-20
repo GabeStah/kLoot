@@ -74,6 +74,12 @@ function kLoot:InitializeSettings()
 		purple = {r=1, g=0, b=1},
 		yellow = {r=1, g=1, b=0},
 	}	
+	-- Communication settings for SendAddonMessage send/receive
+	self.comm = {
+		prefix = 'kLoot',
+		validChannels = {'RAID'},
+		validCommTypes = {'c', 's'}, -- c: client, s: server
+	}
 	self.itemSlotData = {
 		{equipLocation = "INVTYPE_AMMO", slotName = "AmmoSlot", slotNumber = 0, formattedName = "Ammo",},
 		{equipLocation = "INVTYPE_HEAD", slotName = "HeadSlot", slotNumber = 1, formattedName = "Head",},
@@ -108,10 +114,11 @@ function kLoot:InitializeSettings()
 	};	
 	self.roster = {}
 	self.sets = {}
+	-- Addons for sets/equipment management
 	self.setAddons = {
 		{
 			id = 'outfitter', 
-			loaded = function() 
+			loaded = function() -- Function to determine if addon properly loaded/accessible
 				if IsAddOnLoaded('Outfitter') and 
 					Outfitter and 
 					Outfitter.Settings and 
@@ -125,8 +132,8 @@ function kLoot:InitializeSettings()
 	}
 	self.specializations = self:GetSpecializations()
 	self.update = {}
-	self.update.auction = {}
-	self.update.core = {}
+	self.update.auction = {} -- House update script for auctions
+	self.update.core = {} -- House update script for general purpose
 	self.versions = {}	
 	
 	-- Mature language filter

@@ -10,7 +10,7 @@ function kLoot:View_CreateDialog(id, text, width, height, margin, color)
    width = width or 300
    height = height or 150
    color = color or {r=0,g=0,b=0,a=0.8}
-   frameName = ('%s%s'):format('kLootDialog', id)
+   local frameName = ('%s%s'):format('kLootDialog', id)
    
    local f = _G[frameName] or CreateFrame('Frame', frameName, UIParent)
    f.Close = f.Close or function() f:Hide() end

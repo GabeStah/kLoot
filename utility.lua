@@ -118,17 +118,17 @@ function kLoot:GetPlayerCount()
 	return (GetNumGroupMembers() > 0) and GetNumGroupMembers() or 1
 end
 function kLoot:GetUniqueId(data)
-	local newId
-	local isValidId = false
-	while isValidId == false do
-		local matchFound = false
-		newId = (math.random(0,2147483647) * -1)
-		for i,val in pairs(data) do
-			if val.id == newId then matchFound = true end
+	local id = 0
+	local isValid = false
+	while isValid == false do
+		local match = false
+		id = id + 1
+		for i,v in pairs(data) do
+			if v.id == id then match = true end
 		end
-		if not matchFound then isValidId = true end
+		if not match then isValid = true end
 	end
-	return newId
+	return id
 end
 --[[ Retrieve specialization list for player
 ]]
@@ -149,14 +149,14 @@ function kLoot:GetSpecializations()
 end
 --[[ Retrieve the X entry of a non-indexed table
 ]]
-function kLoot:GetTableEntry(data, num, getValue)
+function kLoot:GetTableEntry(data, num, getIndex)
 	if not data or not type(data) == 'table' then return end
 	num = num or 1
 	local count = 0
 	for i,v in pairs(data) do
 		count = count + 1
 		if num == count then
-			if getValue then return v else return i end
+			if getIndex then return i else return v end
 		end
 	end
 end

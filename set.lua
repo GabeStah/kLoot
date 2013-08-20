@@ -174,7 +174,7 @@ end
 --[[ Retrieve first set of basic type
 ]]
 function kLoot:Set_GetByBidType(bidType)
-	bidType = bidType or self:GetTableEntry(self.bidTypes)
+	bidType = bidType or self:GetTableEntry(self.bidTypes, nil, true)
 	for i,v in pairs(self.db.profile.bidding.sets) do
 		if v.bidType and v.bidType == bidType then
 			return self:Set_Get(v.set, v.addon)
