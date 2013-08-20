@@ -18,6 +18,7 @@ manual.lua
 raid.lua
 role.lua
 roster.lua
+set.lua
 timer.lua
 utility.lua
 view.lua

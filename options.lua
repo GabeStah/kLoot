@@ -15,6 +15,9 @@ kLoot.defaults = {
 			whitelist = {},
 			zones = {},
 		},
+		bidding = {
+			sets = {},		
+		},
 		cvars = {
 			matureLanguageFilterEnabled = false,
 		},		
@@ -270,6 +273,19 @@ kLoot.options = {
 				},
 			},
 		},
+		bidding = {
+			name = 'Bidding',
+			type = 'group',
+			args = {
+				sets = {
+					name = 'Sets',
+					type = 'group',
+					args = {
+						
+					},
+				},	
+			},
+		},		
 		cvars = {
 			name = 'Cvars',
 			type = 'group',
@@ -316,3 +332,147 @@ kLoot.options = {
 	},
 };
 
+--[[ Implement default settings
+]]
+function kLoot:Options_Default()
+	self:Options_DefaultBidding()
+end
+
+--[[ Implement bidding default settings
+]]
+function kLoot:Options_DefaultBidding()
+	-- bidTypes
+	for i,v in pairs(self.bidTypes) do
+		if not self.db.profile.bidding.sets[i] then
+			self.db.profile.bidding.sets[i] = {
+				bidType = i,
+				selected = false,
+			}
+		end
+	end
+	self:Options_ResetSelected(self.db.profile.bidding.sets)
+end
+
+--[[ Generate all custom options tables
+]]
+function kLoot:Options_Generate()
+	-- Bidding
+	self:Options_GenerateBiddingOptions()
+end
+
+--[[ Create the custom bidding sets options
+]]
+function kLoot:Options_GenerateBiddingOptions()
+	self.options.args.bidding.args.sets.args = {}
+	-- Loop through bidTypes, create that dropdown
+	self.options.args.bidding.args.sets.args.bidTypes = {
+		name = 'Bid Types',
+		type = 'select',
+		desc = 'Select the Bid Type to edit.',
+		style = 'dropdown',
+		values = function() return self.bidTypes end,
+		get = function(info)
+			-- Regenerate sets
+			self:Set_Generate()
+			return self:Options_GetSelected(self.db.profile.bidding.sets, 'key')
+		end,
+		set = function(info,value)
+			self:Options_SetSelected(self.db.profile.bidding.sets, value)
+		end,
+		order = 1,
+	}	
+	self.options.args.bidding.args.sets.args.addon = {
+		name = 'Addon',
+		type = 'select',
+		desc = 'Select the addon where your set exists.',
+		style = 'dropdown',
+		values = function() return self:Set_AddonList() end,
+		get = function(info)
+			local data = self:Options_GetSelected(self.db.profile.bidding.sets, 'value')
+			return data.addon
+		end,
+		set = function(info,value)
+			local data = self:Options_GetSelected(self.db.profile.bidding.sets, 'value')
+			data.addon = value
+			-- Unset the set
+			data.set = nil
+		end,
+		order = 2,
+	}
+	self.options.args.bidding.args.sets.args.set = {
+		name = 'Set',
+		type = 'select',
+		desc = 'Select the set to associate with this Bid Type.',
+		style = 'dropdown',
+		values = function()
+			-- Get sets for selected addon
+			local data = self:Options_GetSelected(self.db.profile.bidding.sets, 'value')
+			return self:Set_ListByAddon(data.addon) or {}
+		end,
+		get = function(info)
+			local data = self:Options_GetSelected(self.db.profile.bidding.sets, 'value')
+			return data.set
+		end,
+		set = function(info,value)
+			local data = self:Options_GetSelected(self.db.profile.bidding.sets, 'value')
+			data.set = value
+		end,
+		order = 3,
+	}
+end
+
+--[[ Retrieve the selected key in the data table
+]]
+function kLoot:Options_GetSelected(data, selectionType)
+	if not data or not type(data) == 'table' then return end
+	selectionType = selectionType or 'key'
+	for i,v in pairs(data) do
+		if type(v) == 'table' then
+			if v.selected and v.selected == true then
+				if selectionType == 'key' then
+					return i
+				elseif selectionType == 'value' then
+					return v
+				end
+			end
+		end
+	end
+end
+
+--[[ Resets the selected for the data table if necessary
+]]
+function kLoot:Options_ResetSelected(data)
+	if not data or not type(data) == 'table' then return end
+	local selectedCount = 0
+	for i,v in pairs(data) do
+		if type(v) == 'table' then
+			if v.selected and v.selected == true then
+				selectedCount = selectedCount + 1
+			end
+		end
+	end
+	-- If non-one value if selections then select first
+	if selectedCount ~= 1 then
+		self:Options_SetSelectedFirst(data)
+	end
+end
+
+--[[ Properly edit specified table to ensure selected key is only selected option
+]]
+function kLoot:Options_SetSelected(data, key)
+	if not data or not key or not type(data) == 'table' or not data[key] then return end
+	for i,v in pairs(data) do
+		v.selected = false
+	end
+	data[key].selected = true
+end
+
+--[[ Select the first key option in data table
+]]
+function kLoot:Options_SetSelectedFirst(data)
+	if not data or not type(data) == 'table' then return end
+	for i,v in pairs(data) do
+		self:Options_SetSelected(data, i)
+		break
+	end
+end

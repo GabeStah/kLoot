@@ -69,8 +69,8 @@ function kLoot:Raid_Get(raid)
 		end
 	elseif type(raid) == 'table' then
 		--self:Debug('Raid_Get', 'type(raid) == table', raid, 1)
-		if raid.type and raid.type == 'raid' then
-			--self:Debug('Raid_Get', 'raid.type == raid', raid.type, 1)
+		if raid.objectType and raid.objectType == 'raid' then
+			--self:Debug('Raid_Get', 'raid.objectType == raid', raid.objectType, 1)
 			return raid
 		end
 	end
@@ -114,13 +114,14 @@ function kLoot:Raid_New()
 	-- Rebuild roster
 	self:Roster_Rebuild()
 	-- Create empty raid table
-	tinsert(self.db.profile.raids, {
+	local raid = {
 		actors = self.roster.full,
 		auctions = {},
 		id = id,
 		time = time(),
-		type = 'raid',
-	})
+		objectType = 'raid',
+	}
+	tinsert(self.db.profile.raids, raid)
 	-- Bump active raid
 	self.db.profile.settings.raid.active = id
 	self:Debug('Raid_New', 'Raid created.', 3)
@@ -174,7 +175,6 @@ function kLoot:Raid_Start()
 	if kLoot:Raid_IsActive() then
 		-- Active raid
 		-- Continue existing raid?
-		-- TODO: Prompt dialog to continue raid		
 		kLoot:View_PromptResumeRaid()
 	else
 		-- No active raid

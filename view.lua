@@ -22,8 +22,7 @@ function kLoot:View_CreateDialog(id, text, width, height, margin, color)
    t:SetAllPoints(f)
    f.texture = t
    f:SetPoint('TOP',0,-100)
-   
-   
+      
    local fontString = f.fontString or f:CreateFontString(('%s%s'):format(f:GetName(),'Text'))
    f.fontString = fontString
    fontString:SetPoint('BOTTOMRIGHT', -5, 35)
@@ -114,12 +113,12 @@ function kLoot:View_PromptResumeRaid()
 	local dialog = self:View_CreateDialog('ResumeRaid',
 		'Do you wish to resume the currently active raid?')
 	self:View_CreateDialogButton('resume', 'Resume', dialog, function() 
-		kLoot:Raid_Resume()
+		self:Raid_Resume()
 		dialog.Close()
 	end)
 	self:View_CreateDialogButton('new', 'New Raid', dialog, function()
-		kLoot:Raid_Destroy()
-		kLoot:Raid_New()
+		self:Raid_Destroy()
+		self:Raid_New()
 		dialog.Close()
 	end)
 end

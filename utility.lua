@@ -66,55 +66,8 @@ function kLoot:OnUpdate(elapsed)
 	local time, i = GetTime()
 	self.update[updateType].timeSince = (self.update[updateType].timeSince or 0) + elapsed
 	if (self.update[updateType].timeSince > self.db.profile.settings.update[updateType].interval) then	
-		for i = #self.timers, 1, -1 do 
-			-- Check if repeater
-			if self.timers[i].loop then
-				self.timers[i].elapsed = (self.timers[i].elapsed or 0) + self.update[updateType].timeSince
-				if self.timers[i].elapsed >= (self.timers[i].time or 0) then
-					local cancelTimer = false;
-					-- Check if func is string
-					if type(self.timers[i].func) == 'function' then
-						if self.timers[i].args then
-							cancelTimer = self.timers[i].func(unpack(self.timers[i].args));
-						else
-							cancelTimer = self.timers[i].func();
-						end
-					else
-						if self.timers[i].args then
-							cancelTimer = self[self.timers[i].func](unpack(self.timers[i].args));
-						else
-							cancelTimer = self[self.timers[i].func]();
-						end
-					end
-					self.timers[i].elapsed = 0;
-					-- Check if cancel required
-					if cancelTimer then
-						self:Debug("REMOVE FUNC", 1)
-						tremove(self.timers, i)
-					end
-				end
-			else
-				if self.timers[i].time then
-					if self.timers[i].time <= time then
-						-- One-time exec, remove
-						if type(self.timers[i].func) == 'function' then
-							if self.timers[i].args then
-								self.timers[i].func(unpack(self.timers[i].args));
-							else
-								self.timers[i].func();
-							end
-						else
-							if self.timers[i].args then
-								self[self.timers[i].func](unpack(self.timers[i].args));
-							else
-								self[self.timers[i].func]();
-							end
-						end
-						tremove(self.timers, i)
-					end
-				end
-			end
-		end
+		-- Process timers
+		self:Timer_ProcessAll(updateType)
 		self.update[updateType].timeSince = 0
 	end
 end
@@ -125,6 +78,11 @@ function kLoot:ColorToHex(color)
 		self:Round(color.g * 255),
 		self:Round(color.b * 255)
 	)
+end
+function kLoot:DestroyTable(table)
+	for i,v in pairs(table) do
+		table[i] = nil
+	end
 end
 function kLoot:RGBToHex(r, g, b)
 	if type(r) == 'table' then
@@ -171,4 +129,34 @@ function kLoot:GetUniqueId(data)
 		if not matchFound then isValidId = true end
 	end
 	return newId
+end
+--[[ Retrieve specialization list for player
+]]
+function kLoot:GetSpecializations()
+	local specs
+	for i=1,GetNumSpecializations() do
+		local id, name, description, icon, background, role = GetSpecializationInfo(i)
+		specs = specs or {}
+		if name then
+			tinsert(specs, {
+				name = name,
+				icon = icon,
+				role = role,
+			})
+		end
+	end
+	return specs
+end
+--[[ Retrieve the X entry of a non-indexed table
+]]
+function kLoot:GetTableEntry(data, num, getValue)
+	if not data or not type(data) == 'table' then return end
+	num = num or 1
+	local count = 0
+	for i,v in pairs(data) do
+		count = count + 1
+		if num == count then
+			if getValue then return v else return i end
+		end
+	end
 end

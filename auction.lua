@@ -71,8 +71,8 @@ function kLoot:Auction_Get(auction)
 		end
 	elseif type(auction) == 'table' then
 		self:Debug('Auction_Get', 'type(auction) == table', auction, 1)
-		if auction.type and auction.type == 'auction' then
-			self:Debug('Auction_Get', 'auction.type == auction', auction.type, 1)
+		if auction.objectType and auction.objectType == 'auction' then
+			self:Debug('Auction_Get', 'auction.objectType == auction', auction.objectType, 1)
 			return auction
 		end
 	end
@@ -100,16 +100,17 @@ function kLoot:Auction_New(item, raid)
 	if not itemId then return end
 	local auctionId = self:GetUniqueId(raid.auctions)
 	self:Debug('Auction_New', 'New auctionId', auctionId, 1)
-	tinsert(raid.auctions, {
+	local auction = {
 		bids = {},
 		closed = false,		
 		created = GetTime(),
 		expiration = GetTime() + self.db.profile.auction.duration,		
 		id = auctionId,
 		itemId = itemId,
+		objectType = 'auction',		
 		timestamp = time(),
-		type = 'auction',
-	})
+	}
+	tinsert(raid.auctions, auction)
 	self:Debug('Auction_New', 'Auction creation complete.', itemId, 3)
 end
 

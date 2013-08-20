@@ -19,7 +19,7 @@ function kLoot:Actor_New(name, class, online, inRaid, time, guildNote)
 		},
 		guildNote = guildNote,
 		name = name, 
-		type = 'actor',
+		objectType = 'actor',
 	}
 end
 
@@ -31,7 +31,7 @@ function kLoot:Actor_Get(raid, actor)
 	if type(actor) == 'string' then
 		if raid.actors[actor] then return raid.actors[actor] end
 	elseif type(actor) == 'table' then
-		if actor.type and actor.type == 'actor' then return actor end
+		if actor.objectType and actor.objectType == 'actor' then return actor end
 	end
 end
 
@@ -52,11 +52,12 @@ function kLoot:Actor_Update(raid, name, class, online, inRaid, time, guildNote)
 			if (actor.events[#actor.events].online ~= online) or (actor.events[#actor.events].inRaid ~= inRaid) then
 				self:Debug('Actor_Update', 'Actor online or inRaid mismatch, updating.', 1)
 				-- Create new event
-				tinsert(actor.events, {
+				local event = {
 					inRaid = inRaid,
 					online = online,
 					time = time or time(),
-				})
+				}
+				tinsert(actor.events, event)
 			end
 		end
 		-- Bump other values

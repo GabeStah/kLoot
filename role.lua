@@ -10,7 +10,7 @@ local kLoot = _G.kLoot
 @[player] string (Default: 'player') - Player name
 return boolean - Success/failure
 ]]
-function kLoot:Role_AddRole(role,player)
+function kLoot:Role_Add(role,player)
 	role = role or 'editor'
 	player = player or UnitName('player')
 	if role == 'editor' then
@@ -27,7 +27,7 @@ end
 @[player] string (Default: 'player') - Player name
 return boolean - Success/failure
 ]]
-function kLoot:Role_DeleteRole(role,player)
+function kLoot:Role_Delete(role,player)
 	role = role or 'editor'
 	player = player or UnitName('player')
 	if role == 'editor' then
@@ -47,7 +47,7 @@ end
 @[player] string (Default: 'player') - Player name
 return string - Role assigned or nil
 ]]
-function kLoot:Role_GetRole(player)
+function kLoot:Role_Get(player)
 	player = player or UnitName('player')
 end
 

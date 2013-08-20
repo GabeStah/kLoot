@@ -38,7 +38,9 @@ function kLoot:Manual_Bid(input)
 	end
 	if type(input) == 'string' then input = strtrim(input) end
 	-- Send to Auction_New
-	self:Bid_New(self:Auction_ByItem(input))
+	local auction = self:Auction_ByItem(input)
+	if not auction then return end
+	self:Bid_New(auction)
 end
 
 --[[ Manually start or stop a raid via /kl raid [stop/start/begin/end]

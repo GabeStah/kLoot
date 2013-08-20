@@ -11,8 +11,6 @@ function kLoot:Guild_GenerateRoster()
 	GuildRoster()
 	local count = select(2, GetNumGuildMembers())
 	local roster, currentTime = {}, time()
-	--self:Debug('Guild_GenerateRoster', 'count', count, 1)
-	--self:Debug('Guild_GenerateRoster', 'GetNumGuildMembers()', GetNumGuildMembers(), 1)
 	for i=1,count do
 		local name,_, _, _, class, _, note, _, online = GetGuildRosterInfo(i)		
 		-- Check for match
