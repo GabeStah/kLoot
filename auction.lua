@@ -98,7 +98,7 @@ function kLoot:Auction_New(item, raid)
 	-- Parse item id
 	local itemId = self:Item_Id(item)
 	if not itemId then return end
-	local auctionId = self:GetUniqueId(raid.auctions)
+	local auctionId = self:GetUniqueId()
 	self:Debug('Auction_New', 'New auctionId', auctionId, 1)
 	local auction = {
 		bids = {},

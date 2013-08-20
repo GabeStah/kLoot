@@ -117,19 +117,31 @@ end
 function kLoot:GetPlayerCount()
 	return (GetNumGroupMembers() > 0) and GetNumGroupMembers() or 1
 end
-function kLoot:GetUniqueId(data)
-	local id = 0
-	local isValid = false
-	while isValid == false do
-		local match = false
-		id = id + 1
-		for i,v in pairs(data) do
-			if v.id == id then match = true end
+
+--[[ Get a unique identifier
+]]
+function kLoot:GetUniqueId()
+	local id = {}
+	local characters = {
+		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 
+		'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 
+		's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', 
+		'1', '2', '3', '4', '5', '6', '7', '8', '9'
+	}
+	local singlet
+	for i=1,self.uniqueIdLength do
+		case = math.random(1,2)
+		char = math.random(1,#characters)
+		if case == 1 then
+			singlet = string.upper(characters[char])
+		else
+			singlet = characters[char]
 		end
-		if not match then isValid = true end
+		table.insert(id, case == 1 and string.upper(characters[char]) or characters[char])
 	end
-	return id
-end
+	return(table.concat(id))
+end	
+
 --[[ Retrieve specialization list for player
 ]]
 function kLoot:GetSpecializations()

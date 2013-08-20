@@ -36,21 +36,19 @@ end
 
 --[[ Receive a comm message
 ]]
-function kLoot:Comm_Receive(command, data, sender, commType)
+function kLoot:Comm_Receive(command, sender, commType, ...)
 	if not command or not data then return end
 	commType = commType or 'c'
-	if commType == 'c' then
-		-- TODO: client stuff
-		
-	elseif commType = 's' then
-		-- TODO: server stuff
-		
-	end
+	local name = ('Client_On%s'):format(command)	
+	if commType = 's' then name = ('Server_On%s'):format(command) end
+	if self[name] then
+		self[name](sender, ...)
+	end	
 end
 
 --[[ Send a comm message
 ]]
-function kLoot:Comm_Send(command, data, commType, channel)
+function kLoot:Comm_Send(command, commType, channel, ...)
 	if not command or not data then return end
 	if commType and type(commType) == 'string' then commType = strlower(strsub(commType, 1, 1)) end
 	commType = commType or 'c'

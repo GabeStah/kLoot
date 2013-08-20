@@ -107,7 +107,7 @@ function kLoot:Bid_New(auction, items, player, bidType, specialization)
 		end	
 	end
 	
-	local id = self:GetUniqueId(auction.bids)
+	local id = self:GetUniqueId()
 	local bid = {
 		bidType = bidType,	
 		created = GetTime(),		

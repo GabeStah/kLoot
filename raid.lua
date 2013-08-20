@@ -110,7 +110,7 @@ function kLoot:Raid_New()
 		self:Error('Raid_New', 'Invalid permission to create raid.')
 		return
 	end
-	local id = self:GetUniqueId(self.db.profile.raids)
+	local id = self:GetUniqueId()
 	-- Rebuild roster
 	self:Roster_Rebuild()
 	-- Create empty raid table

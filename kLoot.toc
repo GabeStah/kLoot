@@ -11,6 +11,8 @@ options.lua
 actor.lua
 auction.lua
 bid.lua
+client.lua
+comm.lua
 events.lua
 guild.lua
 item.lua
@@ -18,6 +20,7 @@ manual.lua
 raid.lua
 role.lua
 roster.lua
+server.lua
 set.lua
 timer.lua
 utility.lua

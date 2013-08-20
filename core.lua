@@ -131,6 +131,7 @@ function kLoot:InitializeSettings()
 		},
 	}
 	self.specializations = self:GetSpecializations()
+	self.uniqueIdLength = 8
 	self.update = {}
 	self.update.auction = {} -- House update script for auctions
 	self.update.core = {} -- House update script for general purpose
