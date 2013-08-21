@@ -11,7 +11,6 @@ options.lua
 actor.lua
 auction.lua
 bid.lua
-class.lua
 client.lua
 comm.lua
 events.lua
@@ -26,8 +25,3 @@ set.lua
 timer.lua
 utility.lua
 view.lua
-
-prototypes\raid.lua
-prototypes\auction.lua
-prototypes\bid.lua
-prototype.lua
