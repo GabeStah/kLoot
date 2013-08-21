@@ -83,10 +83,11 @@ kLoot.defaults = {
 		},
 	},
 };
-kLoot.timers = {};
-kLoot.threading = {};
-kLoot.threading.timers = {};
-kLoot.threading.timerPool = {};
+kLoot.prototypes = {}
+kLoot.timers = {}
+kLoot.threading = {}
+kLoot.threading.timers = {}
+kLoot.threading.timerPool = {}
 -- Create Options Table
 kLoot.options = {
     name = "kLoot",

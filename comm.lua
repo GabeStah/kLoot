@@ -40,7 +40,7 @@ function kLoot:Comm_Receive(command, sender, commType, ...)
 	if not command or not data then return end
 	commType = commType or 'c'
 	local name = ('Client_On%s'):format(command)	
-	if commType = 's' then name = ('Server_On%s'):format(command) end
+	if commType == 's' then name = ('Server_On%s'):format(command) end
 	if self[name] then
 		self[name](sender, ...)
 	end	

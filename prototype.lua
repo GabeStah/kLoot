@@ -5,26 +5,12 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
---[[ Auction received
+--[[ Initialize prototype creation
 ]]
-function kLoot:Client_OnAuction(sender, id, item, expiration, timestamp)
---[[
-	local auction = {
-		bids = {},
-		closed = false,		
-		created = GetTime(),
-		expiration = GetTime() + self.db.profile.auction.duration,		
-		id = auctionId,
-		itemId = itemId,
-		objectType = 'auction',		
-		timestamp = time(),
-	}
-]]
-end
-
---[[ Raid received
-]]
-function kLoot:Client_OnRaid(sender, id)
-	-- TODO: Add raid creation code from server message
-	-- 		 need SYNCRONIZE class to distribute data
+function kLoot:Prototype_Initialize()
+	self:RaidCreate()
+	self:AuctionCreate()
+	--self:RaidPrototype()
+	--self:AuctionPrototype()
+	--self:BidPrototype()
 end

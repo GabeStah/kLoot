@@ -52,6 +52,7 @@ function kLoot:OnInitialize()
 		kLoot:OnUpdate(elapsed)
 	end)
 	self:InitializeTimers()
+	self:Prototype_Initialize()
 end
 
 function kLoot:InitializeSettings()
