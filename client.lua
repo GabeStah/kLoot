@@ -7,24 +7,78 @@ local kLoot = _G.kLoot
 
 --[[ Auction received
 ]]
-function kLoot:Client_OnAuction(sender, id, item, expiration, timestamp)
---[[
-	local auction = {
-		bids = {},
-		closed = false,		
-		created = GetTime(),
-		expiration = GetTime() + self.db.profile.auction.duration,		
-		id = auctionId,
-		itemId = itemId,
-		objectType = 'auction',		
-		timestamp = time(),
-	}
-]]
+function kLoot:Client_OnAuctionCreate(sender, id, itemId, raidId, duration)
+	kLoot:Debug('Client_OnAuctionCreate', sender, id, itemId, raidId, duration, 3)
+	-- Ignore self
+	if kLoot:IsSelf(sender) then return end
+	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
+		kLoot:Error('Client_OnAuctionCreate', 'Auction sent from invalid sender: ', sender)
+		return
+	end
+	-- Validate id
+	if not id then
+		kLoot:Error('Client_OnAuctionCreate', 'Auction sent with invalid id.')
+		return
+	end
+	-- If auction exists, don't proceed
+	if kLoot:Auction_Get(id) then
+		kLoot:Debug('Client_OnAuctionCreate', 'Auction exists: ', id, 2)
+		return
+	end
+	-- Create new entry for client
+	kLoot:Auction_Create(itemId, raidId, id, duration)
 end
 
---[[ Raid received
+--[[ Raid end
 ]]
-function kLoot:Client_OnRaid(sender, id)
-	-- TODO: Add raid creation code from server message
-	-- 		 need SYNCRONIZE class to distribute data
+function kLoot:Client_OnRaidEnd(sender, id)
+	-- Ignore self
+	if kLoot:IsSelf(sender) then return end
+	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
+		kLoot:Error('Client_OnRaidEnd', 'Raid sent from invalid sender: ', sender)
+		return
+	end
+	-- Validate id
+	if not id then
+		kLoot:Error('Client_OnRaidEnd', 'Raid sent with invalid id.')
+		return
+	end
+	kLoot:Debug('Client_OnRaidEnd', 'id: ', id, 3)
+	-- Destroy raid
+	kLoot:Raid_Destroy(id)
+end
+
+--[[ Raid start
+]]
+function kLoot:Client_OnRaidStart(sender, id)
+	-- Ignore self
+	if kLoot:IsSelf(sender) then return end
+	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
+		kLoot:Error('Client_OnRaidStart', 'Raid sent from invalid sender: ', sender)
+		return
+	end
+	-- Validate id
+	if not id then
+		kLoot:Error('Client_OnRaidStart', 'Raid sent with invalid id.')
+		return
+	end
+	-- If raid exists, don't proceed
+	if kLoot:Raid_Get(id) then return end
+	-- Create new entry for client
+	kLoot:Raid_Create(id)
+end
+
+--[[ Update role of player
+]]
+function kLoot:Client_OnRole(sender, player, role)
+	kLoot:Debug('Client_OnRole', sender, player, role, 2)
+	if not player then return end
+	-- Validate sender as admin
+	if not kLoot:Role_IsAdmin(sender) then return end
+	-- Check if update required
+	if role then
+		kLoot:Role_Add(role, player)
+	else -- No role, remove role
+		kLoot:Role_Delete(role, player)
+	end
 end

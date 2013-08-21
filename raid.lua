@@ -16,36 +16,59 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
---[[ Destroy an existing raid instance in database
-TODO: Complete function
+--[[
+Create: Create instance of object in data
+Destroy: Process closure of object methods
+Delete: Delete object from data
+Get: Retrieve object
+Update: Update values of object
 ]]
-function kLoot:Raid_Destroy()
-	-- Invalidate current active raid
-	self.db.profile.settings.raid.active = nil
+
+--[[ Create raid
+]]
+function kLoot:Raid_Create(id)
+	-- Check if raid exists and fail out if so
+	if id and self:Raid_Get(id) then return end
+	-- No raid, use provided id or new if needed
+	id = id or self:GetUniqueId()
+	-- Rebuild roster
+	self:Roster_Rebuild()
+	-- Create empty raid table
+	local raid = {
+		actors = self.roster.full,
+		auctions = {},
+		id = id,
+		objectType = 'raid',
+		startTime = time(),		
+	}
+	tinsert(self.db.profile.raids, raid)
+	-- Bump active raid
+	self.db.profile.settings.raid.active = id
+	self:Debug('Raid_Create', 'Raid created: ', id, 3)	
+	return id
 end
 
---[[ End process for Raid
+--[[ Delete raid from database
 ]]
-function kLoot:Raid_End()
-	kLoot:Debug('Raid_End', 3)
-	-- TODO: Process end of raid events
-	-- Destroy active raid
-	kLoot:Raid_Destroy()
+function kLoot:Raid_Delete(raid)
+	
 end
 
---[[ Generate the initial raid roster
+--[[ Destroy raid
 ]]
-function kLoot:Raid_GenerateRoster()
-	local count, roster, currentTime, name, class, online = self:GetPlayerCount(), {}, time()
-	if count == 1 then
-		roster[UnitName('player')] = self:Actor_New(UnitName('player'), UnitClass('player'), true, true, currentTime)
-	else
-		for i=1,count do
-			name, _, _, _, class, _, _, online = GetRaidRosterInfo(i)
-			roster[name] = self:Actor_New(name, class, online and true or false, true, currentTime)
-		end	
+function kLoot:Raid_Destroy(raid)
+	local raid = self:Raid_Get(raid or self.db.profile.settings.raid.active)
+	-- Deactivate active
+	if not raid then
+		self:Error('Raid_Destroy', 'No valid raid to destroy.')
+		return
 	end
-	return roster
+	if raid.id == self.db.profile.settings.raid.active then
+		self.db.profile.settings.raid.active = nil
+	end
+	-- Set raid endTime
+	raid.endTime = time()
+	self:Debug('Raid_Destroy', raid.id, 3)
 end
 
 --[[ Get Raid by id or raid object, most recent if not specified
@@ -53,13 +76,16 @@ end
 function kLoot:Raid_Get(raid)
 	if not raid then -- assume active raid
 		if not self:Raid_IsActive() then return end
-		return self:Raid_Get(self:Raid_GetActive())
-	end
-	if type(raid) == 'string' then
-		--self:Debug('Raid_Get', 'type(raid) == string', raid, 1)
-		raid = tonumber(raid)
+		if self:Raid_GetActive() then
+			return self:Raid_Get(self:Raid_GetActive())
+		else
+			return -- No active raid or active does not match any existing
+		end
 	end
 	if type(raid) == 'number' then
+		raid = tostring(raid)
+	end
+	if type(raid) == 'string' then
 		--self:Debug('Raid_Get', 'type(raid) == number', raid, 1)
 		for i,v in pairs(self.db.profile.raids) do
 			if v.id and v.id == raid then
@@ -76,10 +102,46 @@ function kLoot:Raid_Get(raid)
 	end
 end
 
+--[[ Update raid
+]]
+function kLoot:Raid_Update(id)
+	
+end
+
+--[[ End process for Raid
+]]
+function kLoot:Raid_End()
+	kLoot:Debug('Raid_End', 3)
+	-- Verify role
+	if not kLoot:Role_IsAdmin() then
+		kLoot:Error('Raid_End', 'Invalid permission to end raid.')
+		return
+	end
+	-- Send raid end comm
+	kLoot:Comm_RaidEnd(kLoot.db.profile.settings.raid.active)
+	-- Destroy active raid
+	kLoot:Raid_Destroy()
+end
+
+--[[ Generate the initial raid roster
+]]
+function kLoot:Raid_GenerateRoster()
+	local count, roster, currentTime, name, class, online = self:GetPlayerCount(), {}, time()
+	if count == 1 then
+		roster[UnitName('player')] = self:Actor_Create(UnitName('player'), UnitClass('player'), true, true, currentTime)
+	else
+		for i=1,count do
+			name, _, _, _, class, _, _, online = GetRaidRosterInfo(i)
+			roster[name] = self:Actor_Create(name, class, online and true or false, true, currentTime)
+		end	
+	end
+	return roster
+end
+
 --[[ Return the current active raid
 ]]
 function kLoot:Raid_GetActive()
-	if not self:Raid_IsActive() then return end
+	if not self.db.profile.settings.raid.active then return end
 	for i,v in pairs(self.db.profile.raids) do
 		if v.id and v.id == self.db.profile.settings.raid.active then
 			return v
@@ -90,7 +152,7 @@ end
 --[[ Check if a raid is currently active
 ]]
 function kLoot:Raid_IsActive()
-	return self.db.profile.settings.raid.active
+	return self:Raid_GetActive() and self.db.profile.settings.raid.active
 end
 
 --[[ Check if currentzone is valid
@@ -100,31 +162,6 @@ function kLoot:Raid_IsValidZone()
 	for i,v in pairs(self.db.profile.zones.validZones) do
 		if self.currentZone == v then return true end
 	end
-end
-
---[[ Create a new raid instance in database
-]]
-function kLoot:Raid_New()
-	-- Verify role
-	if not self:Role_IsAdmin() then
-		self:Error('Raid_New', 'Invalid permission to create raid.')
-		return
-	end
-	local id = self:GetUniqueId()
-	-- Rebuild roster
-	self:Roster_Rebuild()
-	-- Create empty raid table
-	local raid = {
-		actors = self.roster.full,
-		auctions = {},
-		id = id,
-		time = time(),
-		objectType = 'raid',
-	}
-	tinsert(self.db.profile.raids, raid)
-	-- Bump active raid
-	self.db.profile.settings.raid.active = id
-	self:Debug('Raid_New', 'Raid created.', 3)
 end
 
 --[[ Rebuild temporary raid roster
@@ -170,6 +207,11 @@ end
 ]]
 function kLoot:Raid_Start()
 	kLoot:Debug('Raid_Start', 3)
+	-- Verify role
+	if not kLoot:Role_IsAdmin() then
+		kLoot:Error('Raid_Create', 'Invalid permission to create raid.')
+		return
+	end	
 	-- TODO: Process start of raid events
 	-- Is raid already active?
 	if kLoot:Raid_IsActive() then
@@ -179,9 +221,10 @@ function kLoot:Raid_Start()
 	else
 		-- No active raid
 		-- Create new raid
-		kLoot:Raid_New()
+		local id = kLoot:Raid_Create()
+		-- comm new raid
+		kLoot:Comm_RaidStart(id)
 	end
-	-- Create active raid
 end
 
 --[[ Update the raid roster
@@ -208,7 +251,7 @@ function kLoot:Raid_UpdateRoster(raid)
 				actor.guildNote) 
 		else
 			kLoot:Debug('Raid_UpdateRoster', 'Creating actor:', name, 1)
-			raid.actors[name] = kLoot:Actor_New(
+			raid.actors[name] = kLoot:Actor_Create(
 				actor.name, 
 				actor.class, 
 				actor.events[#actor.events].online, 

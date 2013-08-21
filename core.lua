@@ -52,7 +52,8 @@ function kLoot:OnInitialize()
 		kLoot:OnUpdate(elapsed)
 	end)
 	self:InitializeTimers()
-	self:Prototype_Initialize()
+	-- Comm Registration
+	self:Comm_Register()	
 end
 
 function kLoot:InitializeSettings()
@@ -78,7 +79,7 @@ function kLoot:InitializeSettings()
 	-- Communication settings for SendAddonMessage send/receive
 	self.comm = {
 		prefix = 'kLoot',
-		validChannels = {'RAID'},
+		validChannels = {'RAID', 'GUILD'},
 		validCommTypes = {'c', 's'}, -- c: client, s: server
 	}
 	self.itemSlotData = {
@@ -172,5 +173,31 @@ function kLoot:LOOT_OPENED(event, ...)
 				end
 			end
 		end
+	end
+end
+
+--[[ Check if debug mode active
+]]
+function kLoot:InDebug()
+	return self.db.profile.debug.enabled
+end
+
+--[[ Process comm receiving
+]]
+function kLoot:OnCommReceived(prefix, serialObject, channel, sender)
+	self:Debug('OnCommReceived', 2)
+	if not self:Comm_ValidatePrefix(prefix) then
+		self:Error('OnCommReceived', 'Invalid prefix received, cannot continue: ', prefix)
+		return
+	end
+	if not self:Comm_ValidateChannel(channel) then
+		self:Error('OnCommReceived', 'Invalid channel received, cannot continue: ', channel)
+		return
+	end
+	local success, command, data = self:Deserialize(serialObject)
+	if success then
+		self:Debug('OnCommReceived', prefix, serialObject, channel, sender, 2)
+		local prefix, commType = self:Comm_GetPrefix(prefix)
+		self:Comm_Receive(command, sender, commType, data)
 	end
 end

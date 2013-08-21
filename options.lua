@@ -83,7 +83,6 @@ kLoot.defaults = {
 		},
 	},
 };
-kLoot.prototypes = {}
 kLoot.timers = {}
 kLoot.threading = {}
 kLoot.threading.timers = {}

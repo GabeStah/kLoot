@@ -19,8 +19,13 @@ function kLoot:Manual_Auction(input)
 		end
 	end
 	if type(input) == 'string' then input = strtrim(input) end
-	-- Send to Auction_New
-	self:Auction_New(input)
+	-- Validate role
+	if (not self:Role_IsAdmin()) and (not self:Role_IsEditor()) then
+		self:Error('Manual_Auction', 'Invalid permission to create new Auction.')
+		return
+	end	
+	-- Send to Auction_Create
+	self:Auction_Create(input)
 end
 
 --[[ Manually bid an item via /kl bid item [item]
@@ -37,7 +42,7 @@ function kLoot:Manual_Bid(input)
 		end
 	end
 	if type(input) == 'string' then input = strtrim(input) end
-	-- Send to Auction_New
+	-- Send to Auction_Create
 	local auction = self:Auction_ByItem(input)
 	if not auction then return end
 	self:Bid_New(auction)

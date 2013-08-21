@@ -60,6 +60,9 @@ function kLoot:Error(...)
 	if not ... then return end
 	self:Print(ChatFrame1, ('Error: %s - %s'):format(...))
 end
+function kLoot:IsSelf(player)
+	return (UnitName(player) == UnitName('player'))
+end
 function kLoot:OnUpdate(elapsed)
 	if not self.db.profile.debug.enableTimers then return end
 	local updateType = 'core'

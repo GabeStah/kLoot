@@ -49,6 +49,11 @@ return string - Role assigned or nil
 ]]
 function kLoot:Role_Get(player)
 	player = player or UnitName('player')
+	if self:Role_IsAdmin(player) then
+		return 'admin'
+	elseif self:Role_IsEditor(player) then
+		return 'editor'
+	end
 end
 
 --[[ Determine if a Player is assigned Administrator Role

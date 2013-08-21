@@ -14,7 +14,7 @@ function kLoot:Guild_GenerateRoster()
 	for i=1,count do
 		local name,_, _, _, class, _, note, _, online = GetGuildRosterInfo(i)		
 		-- Check for match
-		roster[name] = self:Actor_New(name, class, online and true or false, false, currentTime, note)
+		roster[name] = self:Actor_Create(name, class, online and true or false, false, currentTime, note)
 	end	
 	return roster
 end

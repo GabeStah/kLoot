@@ -5,6 +5,48 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
+--[[
+Create: Create instance of object in data
+Destroy: Process closure of object methods
+Delete: Delete object from data
+Get: Retrieve object
+Update: Update values of object
+]]
+
+--[[ Create a new set
+]]
+function kLoot:Set_Create(id, addon, name, icon)
+	if not id then return end
+	name = name or id
+	addon = addon or 'blizzard'
+	-- Create empty raid table
+	local set = {
+		addon = addon,	
+		id = id,
+		icon = icon,
+		name = name,
+		objectType = 'set',
+	}
+	self:Debug('Set_Create', 'New set generated: ', set, 2)
+	tinsert(self.sets, set)
+	return self.sets[#self.sets]
+end
+
+--[[ Retrieve a set from existing table
+]]
+function kLoot:Set_Get(id, addon, name)
+	if not id then return end
+	if type(id) == 'table' and id.objectType and id.objectType == 'set' then
+		return id
+	elseif type(id) == 'string' or type(id) == 'number' then
+		name = name or id
+		addon = addon or 'blizzard'
+		for i,v in pairs(self.sets) do
+			if v.id == id and v.addon == addon then return v end
+		end	
+	end
+end
+
 --[[ Add an item to a set
 ]]
 function kLoot:Set_AddItem(set, itemId, slot, link, name, equipLocation, level, rarity)
@@ -106,7 +148,7 @@ function kLoot:Set_GenerateBlizzard()
 	if not (GetNumEquipmentSets() >= 1) then return end
 	for i=1,GetNumEquipmentSets() do
 		local name, icon = GetEquipmentSetInfo(i)
-		local set = self:Set_New(name, 'blizzard', name, icon)
+		local set = self:Set_Create(name, 'blizzard', name, icon)
 		local items = GetEquipmentSetItemIDs(name)
 		if items then
 			for slot,id in pairs(items) do
@@ -141,7 +183,7 @@ function kLoot:Set_GenerateOutfitter()
 		if Outfitter.OutfitBar then
 			icon = Outfitter.OutfitBar:GetOutfitTexture(outfit) or nil
 		end
-		local set = self:Set_New(outfit.Name, 'outfitter', outfit.Name, icon)
+		local set = self:Set_Create(outfit.Name, 'outfitter', outfit.Name, icon)
 		-- Populate items
 		for slot, vItem in pairs(outfit.Items) do
 			self:Set_AddItem(set, 
@@ -156,21 +198,6 @@ function kLoot:Set_GenerateOutfitter()
 	end
 end
 
---[[ Retrieve a set from existing table
-]]
-function kLoot:Set_Get(id, addon, name)
-	if not id then return end
-	if type(id) == 'table' and id.objectType and id.objectType == 'set' then
-		return id
-	elseif type(id) == 'string' or type(id) == 'number' then
-		name = name or id
-		addon = addon or 'blizzard'
-		for i,v in pairs(self.sets) do
-			if v.id == id and v.addon == addon then return v end
-		end	
-	end
-end
-
 --[[ Retrieve first set of basic type
 ]]
 function kLoot:Set_GetByBidType(bidType)
@@ -180,25 +207,6 @@ function kLoot:Set_GetByBidType(bidType)
 			return self:Set_Get(v.set, v.addon)
 		end
 	end
-end
-
---[[ Create a new set
-]]
-function kLoot:Set_New(id, addon, name, icon)
-	if not id then return end
-	name = name or id
-	addon = addon or 'blizzard'
-	-- Create empty raid table
-	local set = {
-		addon = addon,	
-		id = id,
-		icon = icon,
-		name = name,
-		objectType = 'set',
-	}
-	self:Debug('Set_New', 'New set generated: ', set, 2)
-	tinsert(self.sets, set)
-	return self.sets[#self.sets]
 end
 
 --[[ Retrieve the item for the slot of the matching set

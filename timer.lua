@@ -33,6 +33,24 @@ function kLoot:Timer_Cancel(timer)
 	end
 end
 
+--[[ Create and initialize a new timer
+]]
+function kLoot:Timer_Create(func,time,loop,cancel,fireOnCancel,...)
+	if not func then return end
+	if type(func) == 'string' then
+		self:Debug('CreateTimer', 'New timer function: ', func, 1)
+	end
+	table.insert(self.timers, {
+		args = ...,
+		cancel = cancel,
+		fireOnCancel = (type(fireOnCancel) == 'nil') and true or fireOnCancel,		
+		func = func, 
+		id = self:GetUniqueId(),
+		loop = loop,
+		objectType = 'timer',
+		time = loop and (time or 0) or (GetTime() + time)})
+end
+
 --[[ Destroy a timer
 ]]
 function kLoot:Timer_Destroy(timer)
@@ -69,24 +87,6 @@ function kLoot:Timer_Execute(timer)
 	if timer.loop then timer.elapsed = 0 end
 end
 
---[[ Create and initialize a new timer
-]]
-function kLoot:Timer_New(func,time,loop,cancel,fireOnCancel,...)
-	if not func then return end
-	if type(func) == 'string' then
-		self:Debug('CreateTimer', 'New timer function: ', func, 1)
-	end
-	table.insert(self.timers, {
-		args = ...,
-		cancel = cancel,
-		fireOnCancel = (type(fireOnCancel) == 'nil') and true or fireOnCancel,		
-		func = func, 
-		id = self:GetUniqueId(),
-		loop = loop,
-		objectType = 'timer',
-		time = loop and (time or 0) or (GetTime() + time)})
-end
-
 --[[ Process all timers
 ]]
 function kLoot:Timer_ProcessAll(updateType)
@@ -115,12 +115,12 @@ end
 --[[ Update the roster of the raid every 10 seconds
 ]]
 function kLoot:Timer_Raid_UpdateRoster()
-	self:Timer_New('Raid_UpdateRoster', 10, true)
+	self:Timer_Create('Raid_UpdateRoster', 10, true)
 end
 
 --[[ Create set generation timer after delay
 ]]
 function kLoot:Timer_Set_Generate(delay)
 	delay = delay or 1
-	self:Timer_New('Set_Generate', delay, true, 'Set_AddonsLoaded')
+	self:Timer_Create('Set_Generate', delay, true, 'Set_AddonsLoaded')
 end
