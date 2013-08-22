@@ -211,13 +211,19 @@ end
 
 --[[ Retrieve the item for the slot of the matching set
 ]]
-function kLoot:Set_SlotItem(set, slot)
+function kLoot:Set_SlotItem(set, slot, key)
 	if not set or not slot then return end
 	set = self:Set_Get(set)
-	if not set.items then return end	
+	if not set.items then return end
 	-- if number, convert to name
 	if type(slot) == 'number' then slot = self:Item_GetSlotValue(slot) end
 	for i,v in pairs(set.items) do
-		if v.slot == slot then return v end
+		if v.slot == slot then
+			if key and v[key] then
+				return v[key]
+			elseif not key then
+				return v
+			end
+		end
 	end
 end

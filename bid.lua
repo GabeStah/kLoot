@@ -15,54 +15,53 @@ Update: Update values of object
 
 --[[ Create new bid
 ]]
-function kLoot:Bid_Create(auction, items, player, bidType, specialization)
+function kLoot:Bid_Create(auction, id, items, player, bidType, specialization, isClient)
 	auction = self:Auction_Get(auction)
 	if not auction then
-		self:Error('Bid_New', 'Cannot generate bid for nil auction.')
+		self:Error('Bid_Create', 'Cannot generate bid for nil auction.')
 		return
 	end
+	-- Check if bid exists
+	if id and self:Bid_Get(id, auction) then return end	
 	player = player or UnitName('player')
 	bidType = bidType or self:GetTableEntry(self.bidTypes, nil, true)
 	specialization = specialization or self:GetTableEntry(self.specializations)
-	
+	if specialization and type(specialization) == 'table' and specialization.name then
+		specialization = specialization.name
+	end
 	if not items then
-		items = {}	
+		items = {}
 		local set = self:Set_GetByBidType(bidType)
-		self:Debug('Bid_New', 'bidType: ', bidType, 1)
-		self:Debug('Bid_New', 'set: ', set, 1)
-		local slot = self:Item_GetSlotValue(self:Item_EquipLocation(auction.itemId), 'equipLocation', 'slotNumber')
-		self:Debug('Bid_New', 'slot: ', slot, 1)
+		local slot = self:Item_GetSlotValue(self:Item_EquipLocation(auction.itemId), 'equipLocation', 'slotNumber')			
 		if not slot then return end
 		-- Check if slot is finger or trinket or weapon
+		local setItems = {
+			[11] = self:Set_SlotItem(set, 11, 'id'),
+			[12] = self:Set_SlotItem(set, 12, 'id'),
+			[13] = self:Set_SlotItem(set, 13, 'id'),
+			[14] = self:Set_SlotItem(set, 14, 'id'),
+			[16] = self:Set_SlotItem(set, 16, 'id'),
+			[17] = self:Set_SlotItem(set, 17, 'id'),
+		}
+		setItems[slot] = self:Set_SlotItem(set, slot, 'id')
 		if slot == 11 or slot == 12 then
-			if self:Set_SlotItem(set, 11) then
-				tinsert(items, self:Set_SlotItem(set, 11))
-			end
-			if self:Set_SlotItem(set, 12) then
-				tinsert(items, self:Set_SlotItem(set, 12))
-			end
+			if setItems[11] then tinsert(items, setItems[11]) end
+			if setItems[12] then tinsert(items, setItems[12]) end
 		elseif slot == 13 or slot == 14 then
-			if self:Set_SlotItem(set, 13) then
-				tinsert(items, self:Set_SlotItem(set, 14))
-			end
-			if self:Set_SlotItem(set, 14) then
-				tinsert(items, self:Set_SlotItem(set, 14))
-			end
+			if setItems[13] then tinsert(items, setItems[13]) end
+			if setItems[14] then tinsert(items, setItems[14]) end
 		elseif slot == 16 or slot == 17 then
-			if self:Set_SlotItem(set, 16) then
-				tinsert(items, self:Set_SlotItem(set, 16))
-			end
-			if self:Set_SlotItem(set, 17) then
-				tinsert(items, self:Set_SlotItem(set, 17))
-			end
+			if setItems[16] then tinsert(items, setItems[16]) end
+			if setItems[17] then tinsert(items, setItems[17]) end
 		else
-			if self:Set_SlotItem(set, slot) then
-				tinsert(items, self:Set_SlotItem(set, slot))
-			end
+			if setItems[slot] then tinsert(items, setItems[slot]) end
 		end	
+	else
+		-- items exist as ID or itemlink data
+		
 	end
 	
-	local id = self:GetUniqueId()
+	id = id or self:GetUniqueId()
 	local bid = {
 		bidType = bidType,	
 		created = GetTime(),		
@@ -74,7 +73,10 @@ function kLoot:Bid_Create(auction, items, player, bidType, specialization)
 		timestamp = time(),
 	}
 	tinsert(auction.bids, bid)
-	self:Debug('Bid_New', 'Bid creation complete.', id, 3)
+	if not isClient then
+		self:Comm_BidCreate(id, auction.id, items, player, bidType, specialization)
+	end
+	self:Debug('Bid_Create', 'Bid creation complete.', id, 3)
 end
 
 --[[ Delete auction

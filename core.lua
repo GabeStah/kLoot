@@ -185,7 +185,6 @@ end
 --[[ Process comm receiving
 ]]
 function kLoot:OnCommReceived(prefix, serialObject, channel, sender)
-	self:Debug('OnCommReceived', 2)
 	if not self:Comm_ValidatePrefix(prefix) then
 		self:Error('OnCommReceived', 'Invalid prefix received, cannot continue: ', prefix)
 		return
@@ -196,7 +195,6 @@ function kLoot:OnCommReceived(prefix, serialObject, channel, sender)
 	end
 	local success, command, data = self:Deserialize(serialObject)
 	if success then
-		self:Debug('OnCommReceived', prefix, serialObject, channel, sender, 2)
 		local prefix, commType = self:Comm_GetPrefix(prefix)
 		self:Comm_Receive(command, sender, commType, data)
 	end

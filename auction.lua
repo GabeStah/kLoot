@@ -15,7 +15,7 @@ Update: Update values of object
 
 --[[ Create new auction
 ]]
-function kLoot:Auction_Create(item, raid, id, duration)
+function kLoot:Auction_Create(item, raid, id, duration, isClient)
 	-- Check if auction exists
 	if id and self:Auction_Get(id) then return end
 	if not item then
@@ -49,20 +49,31 @@ function kLoot:Auction_Create(item, raid, id, duration)
 	}
 	tinsert(raid.auctions, auction)
 	self:Debug('Auction_Create', 'Auction creation complete.', itemId, 3)
-	-- Send comm
-	self:Comm_AuctionCreate(id, itemId, raid.id, self.db.profile.auction.duration)
+	
+	if not isClient then
+		-- Send comm
+		self:Comm_AuctionCreate(id, itemId, raid.id, self.db.profile.auction.duration)
+	end
 end
 
 --[[ Delete auction
 ]]
-function kLoot:Auction_Delete(auction)
+function kLoot:Auction_Delete(auction, isClient)
 
 end
 
 --[[ Destroy auction
 ]]
-function kLoot:Auction_Destroy(auction)
-	
+function kLoot:Auction_Destroy(auction, isClient)
+	auction = self:Auction_Get(auction)
+	if not auction then
+		self:Error('Auction_Destroy', 'Invalid auction specified, cannot destroy.')
+		return
+	end
+	-- TODO: Complete auctionDestroy code if necessary
+	if not isClient then
+		self:Comm_AuctionDestroy(id)
+	end
 end
 
 --[[ Get Auction by id or object, most recent if not specified

@@ -45,7 +45,7 @@ function kLoot:Manual_Bid(input)
 	-- Send to Auction_Create
 	local auction = self:Auction_ByItem(input)
 	if not auction then return end
-	self:Bid_New(auction)
+	self:Bid_Create(auction)
 end
 
 --[[ Manually start or stop a raid via /kl raid [stop/start/begin/end]

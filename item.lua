@@ -58,6 +58,15 @@ function kLoot:Item_Id(item)
 		if item == '0' then return end
 		return tonumber(item)
 	end
+	-- Table
+	if type(item) == 'table' then
+		if item.itemId and type(tonumber(item.itemId)) == 'number' then
+			return tonumber(item.itemId)
+		end
+		if item.id and type(tonumber(item.id)) == 'number' then
+			return tonumber(item.id)
+		end
+	end
 	-- Link
 	local found, _, itemString = string.find(item, "^|c%x+|H(.+)|h%[.*%]")
 	if itemString then 

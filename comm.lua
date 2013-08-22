@@ -9,7 +9,14 @@ local kLoot = _G.kLoot
 ]]
 function kLoot:Comm_AuctionCreate(id, itemId, raidId, duration)
 	if not id or not self:Auction_Get(id) or not raidId or not itemId then return end
-	self:Comm_Send('AuctionCreate', nil, 'RAID', id, itemId, raidId, duration)
+	self:Comm_Send('AuctionCreate', 'c', 'RAID', id, itemId, raidId, duration)
+end
+
+--[[ Trigger when auction is created
+]]
+function kLoot:Comm_BidCreate(id, auctionId, items, player, bidType, specialization)
+	if not id or not self:Bid_Get(id, auctionId) or not player or not bidType then return end
+	self:Comm_Send('BidCreate', 'c', 'RAID', id, auctionId, items, player, bidType, specialization)
 end
 
 --[[ Retrieve the prefix valid
@@ -21,18 +28,18 @@ function kLoot:Comm_GetPrefix(text)
 	return prefix, commType
 end
 
---[[ Trigger when raid ends
+--[[ Trigger when raid is created
 ]]
-function kLoot:Comm_RaidEnd(id)
+function kLoot:Comm_RaidCreate(id)
 	if not id or not self:Raid_Get(id) then return end
-	self:Comm_Send('RaidEnd', nil, 'RAID', id)
+	self:Comm_Send('RaidCreate', 'c', 'RAID', id)
 end
 
---[[ Trigger when raid starts
+--[[ Trigger when raid is destroyed
 ]]
-function kLoot:Comm_RaidStart(id)
+function kLoot:Comm_RaidDestroy(id)
 	if not id or not self:Raid_Get(id) then return end
-	self:Comm_Send('RaidStart', nil, 'RAID', id)
+	self:Comm_Send('RaidDestroy', 'c', 'RAID', id)
 end
 
 --[[ Receive a comm message
@@ -44,7 +51,7 @@ function kLoot:Comm_Receive(command, sender, commType, data)
 	if commType == 's' then name = ('Server_On%s'):format(command) end
 	self:Debug('Comm_Receive', 'Communication received.', 'Func: ', name, command, sender, commType, 2)
 	if self[name] then
-		self[name](nil, sender, select(2, self:Deserialize(data)))
+		self[name](nil, sender, self:Comm_TypeIsClient(commType), select(2, self:Deserialize(data)))
 	else
 		self:Debug('Comm_Receive', 'No matching function: ', name, self[name], 2)
 	end	
@@ -71,6 +78,12 @@ function kLoot:Comm_Send(command, commType, channel, ...)
 	end
 	self:SendCommMessage(prefix, self:Serialize(command, self:Serialize(...)), channel)
 	self:Debug('Comm_Send', prefix, command, channel, 2)
+end
+
+--[[ Determine if commType is client
+]]
+function kLoot:Comm_TypeIsClient(commType)
+	return (commType and commType == 'c')
 end
 
 --[[ Check if channel is valid

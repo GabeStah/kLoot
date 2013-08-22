@@ -43,6 +43,7 @@ function kLoot:Debug(...)
 	local isSpewLoaded = IsAddOnLoaded('Spew')
 	local prefix ='kLootDebug: '
 	local threshold = select(select('#', ...), ...) or 3
+	if type(threshold) ~= 'number' then threshold = 3 end
 	-- CHECK IF _DEV exists
 	if self.db.profile.debug.enabled then
 		if (threshold >= kLoot.db.profile.debug.threshold) then

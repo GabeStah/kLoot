@@ -26,7 +26,7 @@ Update: Update values of object
 
 --[[ Create raid
 ]]
-function kLoot:Raid_Create(id)
+function kLoot:Raid_Create(id, isClient)
 	-- Check if raid exists and fail out if so
 	if id and self:Raid_Get(id) then return end
 	-- No raid, use provided id or new if needed
@@ -44,7 +44,10 @@ function kLoot:Raid_Create(id)
 	tinsert(self.db.profile.raids, raid)
 	-- Bump active raid
 	self.db.profile.settings.raid.active = id
-	self:Debug('Raid_Create', 'Raid created: ', id, 3)	
+	self:Debug('Raid_Create', id, 3)	
+	if not isClient then
+		self:Comm_RaidCreate(id)	
+	end
 	return id
 end
 
@@ -56,7 +59,7 @@ end
 
 --[[ Destroy raid
 ]]
-function kLoot:Raid_Destroy(raid)
+function kLoot:Raid_Destroy(raid, isClient)
 	local raid = self:Raid_Get(raid or self.db.profile.settings.raid.active)
 	-- Deactivate active
 	if not raid then
@@ -69,6 +72,10 @@ function kLoot:Raid_Destroy(raid)
 	-- Set raid endTime
 	raid.endTime = time()
 	self:Debug('Raid_Destroy', raid.id, 3)
+	-- Send raid end comm
+	if not isClient then
+		kLoot:Comm_RaidDestroy(raid.id)
+	end
 end
 
 --[[ Get Raid by id or raid object, most recent if not specified
@@ -117,8 +124,6 @@ function kLoot:Raid_End()
 		kLoot:Error('Raid_End', 'Invalid permission to end raid.')
 		return
 	end
-	-- Send raid end comm
-	kLoot:Comm_RaidEnd(kLoot.db.profile.settings.raid.active)
 	-- Destroy active raid
 	kLoot:Raid_Destroy()
 end
@@ -206,10 +211,9 @@ end
 --[[ Start a new raid
 ]]
 function kLoot:Raid_Start()
-	kLoot:Debug('Raid_Start', 3)
 	-- Verify role
 	if not kLoot:Role_IsAdmin() then
-		kLoot:Error('Raid_Create', 'Invalid permission to create raid.')
+		kLoot:Error('Raid_Start', 'Invalid permission to create raid.')
 		return
 	end	
 	-- TODO: Process start of raid events
@@ -222,8 +226,6 @@ function kLoot:Raid_Start()
 		-- No active raid
 		-- Create new raid
 		local id = kLoot:Raid_Create()
-		-- comm new raid
-		kLoot:Comm_RaidStart(id)
 	end
 end
 
