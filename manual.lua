@@ -47,14 +47,18 @@ function kLoot:Manual_Bid(input)
 	if not count then return end
 	local auction, items = self:Auction_ByItem(self:Item_LinkFromString(input, 1))
 	if not auction then return end	
-	if (count >= 2) then
-		items = items or {}	
+	local bidType = self:Utility_GetTableEntry(self.bidTypes, nil, true)	
+	if (count >= 2) then -- Items passed
+		items = {}	
 		-- Bid item(s) specified
 		for i=2,count do
 			tinsert(items, self:Item_Id(self:Item_LinkFromString(input, i)))
 		end
+	else -- No items passed, use set items or current items
+		local set = self:Set_GetByBidType(bidType)
+		items = self:Set_GetItemsByAuction(set, auction)
 	end
-	self:Bid_Create(auction, nil, items)
+	self:Bid_Create(auction, nil, items, nil, bidType)
 end
 
 --[[ Manually start or stop a raid via /kl raid [stop/start/begin/end]

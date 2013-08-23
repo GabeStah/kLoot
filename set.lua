@@ -209,6 +209,35 @@ function kLoot:Set_GetByBidType(bidType)
 	end
 end
 
+function kLoot:Set_GetItemsByAuction(set, auction)
+	local items
+	local slot = self:Item_GetSlotValue(self:Item_EquipLocation(auction.itemId), 'equipLocation', 'slotNumber')			
+	if not slot then return end
+	-- Check if slot is finger or trinket or weapon
+	local setItems = {
+		[11] = self:Set_SlotItem(set, 11, 'id'),
+		[12] = self:Set_SlotItem(set, 12, 'id'),
+		[13] = self:Set_SlotItem(set, 13, 'id'),
+		[14] = self:Set_SlotItem(set, 14, 'id'),
+		[16] = self:Set_SlotItem(set, 16, 'id'),
+		[17] = self:Set_SlotItem(set, 17, 'id'),
+	}
+	setItems[slot] = self:Set_SlotItem(set, slot, 'id')
+	if slot == 11 or slot == 12 then
+		if setItems[11] then items = items or {} tinsert(items, setItems[11]) end
+		if setItems[12] then items = items or {} tinsert(items, setItems[12]) end
+	elseif slot == 13 or slot == 14 then
+		if setItems[13] then items = items or {} tinsert(items, setItems[13]) end
+		if setItems[14] then items = items or {} tinsert(items, setItems[14]) end
+	elseif slot == 16 or slot == 17 then
+		if setItems[16] then items = items or {} tinsert(items, setItems[16]) end
+		if setItems[17] then items = items or {} tinsert(items, setItems[17]) end
+	else
+		if setItems[slot] then items = items or {} tinsert(items, setItems[slot]) end
+	end
+	return items
+end
+
 --[[ Retrieve the item for the slot of the matching set
 ]]
 function kLoot:Set_SlotItem(set, slot, key)
