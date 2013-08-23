@@ -48,6 +48,8 @@ function kLoot:Raid_Create(id, isClient)
 	if not isClient then
 		self:Comm_RaidCreate(id)	
 	end
+	-- Create Raid Roster timer
+	self:Timer_Raid_UpdateRoster()
 	return id
 end
 
@@ -76,6 +78,8 @@ function kLoot:Raid_Destroy(raid, isClient)
 	if not isClient then
 		kLoot:Comm_RaidDestroy(raid.id)
 	end
+	-- Destroy Raid Roster timer
+	self:Timer_Destroy('Raid_UpdateRoster')	
 end
 
 --[[ Get Raid by id or raid object, most recent if not specified

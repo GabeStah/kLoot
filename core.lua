@@ -120,13 +120,18 @@ function kLoot:InitializeSettings()
 	self.setAddons = {
 		{
 			id = 'outfitter', 
-			loaded = function() -- Function to determine if addon properly loaded/accessible
+			loaded = function() -- Function to determine if addon properly loaded/is accessible
 				if IsAddOnLoaded('Outfitter') and 
 					Outfitter and 
 					Outfitter.Settings and 
 					Outfitter.Settings.Outfits and 
 					Outfitter.Settings.Outfits.Complete then
 					return true
+				else -- Not loaded, check if disabled
+					local name, _, _, enabled, _, reason = GetAddOnInfo('Outfitter')
+					if name then
+						if not enabled and reason == 'DISABLED' then return true end -- Return true since this addon is disabled by player
+					end
 				end
 			end,
 			name = 'Outfitter', 
@@ -153,8 +158,11 @@ function kLoot:InitializeEvents()
 end
 
 function kLoot:InitializeTimers()
-	-- Create roster update timer
-	self:Timer_Raid_UpdateRoster()
+	-- If raid is active, create updateRoster timer
+	if self:Raid_IsActive() then
+		-- Create roster update timer
+		self:Timer_Raid_UpdateRoster()
+	end
 	-- Create set creation delay timer
 	self:Timer_Set_Generate()
 end

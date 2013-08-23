@@ -8,8 +8,8 @@ local kLoot = _G.kLoot
 --[[ Check if timer should be cancelled
 ]]
 function kLoot:Timer_Cancel(timer)
-	if not timer then return end
-	if not (type(timer) == 'table') or not timer.objectType or not (timer.objectType == 'timer') then
+	timer = self:Timer_Get(timer)
+	if not timer then
 		self:Error('Timer_Cancel', 'Invalid timer, cancellation ignored.')
 		return
 	end	
@@ -37,8 +37,10 @@ end
 ]]
 function kLoot:Timer_Create(func,time,loop,cancel,fireOnCancel,...)
 	if not func then return end
+	-- Check if timer exists
+	if self:Timer_Get(func) then return end
 	if type(func) == 'string' then
-		self:Debug('CreateTimer', 'New timer function: ', func, 1)
+		self:Debug('Timer_Create', 'New timer function: ', func, 1)
 	end
 	table.insert(self.timers, {
 		args = ...,
@@ -54,14 +56,15 @@ end
 --[[ Destroy a timer
 ]]
 function kLoot:Timer_Destroy(timer)
-	if not timer then return end
-	if not (type(timer) == 'table') or not timer.objectType or not (timer.objectType == 'timer') then
+	timer = self:Timer_Get(timer)
+	if not timer then
 		self:Error('Timer_Destroy', 'Invalid timer, destroy cancelled.')
 		return
-	end	
+	end
 	for i,v in pairs(self.timers) do
 		if v.id == timer.id then
 			tremove(self.timers, i)
+			self:Debug('Timer_Destroy', type(timer.func) == 'string' and timer.func or '', timer.id, 3)
 		end
 	end
 end
@@ -69,8 +72,8 @@ end
 --[[ Execute the timer function
 ]]
 function kLoot:Timer_Execute(timer)
-	if not timer then return end
-	if not (type(timer) == 'table') or not timer.objectType or not (timer.objectType == 'timer') then
+	timer = self:Timer_Get(timer)
+	if not timer then
 		self:Error('Timer_Execute', 'Invalid timer, execution halted.')
 		return
 	end
@@ -85,6 +88,21 @@ function kLoot:Timer_Execute(timer)
 	end
 	-- Reset elapsed if looping timer
 	if timer.loop then timer.elapsed = 0 end
+end
+
+--[[ Get Timer by func name
+]]
+function kLoot:Timer_Get(timer)
+	if not timer then return end
+	if type(timer) == 'string' then
+		for i,v in pairs(self.timers) do
+			if v.func and v.func == timer then
+				return v
+			end
+		end
+	elseif type(timer) == 'table' and timer.objectType == 'timer' then
+		return timer
+	end
 end
 
 --[[ Process all timers

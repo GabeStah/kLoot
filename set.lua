@@ -101,7 +101,7 @@ function kLoot:Set_AddonLoaded(addon)
 			end
 		end
 	elseif type(addon) == 'table' then
-		if IsAddOnLoaded(addon.name) and addon.loaded() then 
+		if addon.loaded() then 
 			return true
 		end	
 	end
