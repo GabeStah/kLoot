@@ -53,7 +53,9 @@ function kLoot:OnInitialize()
 	end)
 	self:InitializeTimers()
 	-- Comm Registration
-	self:Comm_Register()	
+	self:Comm_Register()
+	-- Syncronization
+	self:Syncronize()
 end
 
 function kLoot:InitializeSettings()
@@ -247,5 +249,14 @@ function kLoot:OnUpdate(elapsed)
 		-- Process timers
 		self:Timer_ProcessAll(updateType)
 		self.update[updateType].timeSince = 0
+	end
+end
+
+--[[ Sync settings
+]]
+function kLoot:Syncronize()
+	-- if admin, send out role response
+	if self:Role_IsAdmin() then
+		self:Comm_RoleResponse()
 	end
 end

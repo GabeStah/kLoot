@@ -58,6 +58,16 @@ function kLoot:Role_Get(player)
 	end
 end
 
+--[[ Get sync string
+]]
+function kLoot:Role_GetResponseString()
+	local data
+	for i,v in pairs(self.db.profile.editors) do
+		data = data and ('%s,e|%s'):format(data,v.player) or ('e|%s'):format(v.player)
+	end
+	return data
+end
+
 --[[ Determine if a Player is assigned Administrator Role
 @[player] string (Default: 'player') - Player name
 return boolean - Result of role match
@@ -92,4 +102,19 @@ function kLoot:Role_IsRole(role,player)
 		return self:Role_IsEditor(player)
 	end
 	return false
+end
+
+--[[ Update from synced response string
+]]
+function kLoot:Role_UpdateFromResponse(response)
+	local roles = self:Utility_SplitString(response, ',')
+	local role, player
+	for i,v in pairs(roles) do
+		role, player = strsplit('|', v)
+		if role and player and role == 'e' then
+			if not self:Role_IsEditor(player) then
+				self:Role_Add('editor', player, true)
+			end
+		end
+	end
 end

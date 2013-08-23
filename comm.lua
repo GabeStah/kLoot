@@ -79,6 +79,16 @@ function kLoot:Comm_RoleDelete(role, player)
 	self:Comm_Send('RoleDelete', 'c', 'RAID', role, player)
 end
 
+--[[ Trigger when role response is generated
+]]
+function kLoot:Comm_RoleResponse()
+	-- Create role>player list string
+	local sync = self:Role_GetResponseString()
+	if sync then
+		self:Comm_Send('RoleResponse', 'c', 'RAID', sync)
+	end
+end
+
 --[[ Send a comm message
 ]]
 function kLoot:Comm_Send(command, commType, channel, ...)

@@ -113,3 +113,13 @@ function kLoot:Client_OnRoleDelete(sender, isClient, role, player)
 	kLoot:Debug('Client_OnRoleDelete', sender, role, player, 2)
 	kLoot:Role_Delete(role, player, isClient)
 end
+
+--[[ Role response sent
+]]
+function kLoot:Client_OnRoleResponse(sender, isClient, response)
+	if not response then return end
+	-- Validate sender as admin
+	if not kLoot:Role_IsAdmin(sender) then return end
+	kLoot:Debug('Client_OnRoleResponse', sender, response, 2)
+	kLoot:Role_UpdateFromResponse(response)
+end
