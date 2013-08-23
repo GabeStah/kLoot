@@ -41,10 +41,6 @@ function kLoot:Client_OnBidCreate(sender, isClient, id, auctionId, items, player
 	kLoot:Debug('Client_OnBidCreate', sender, id, auctionId, items, player, bidType, specialization, 3)
 	-- Ignore self
 	if kLoot:Utility_IsSelf(sender) then return end
-	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
-		kLoot:Error('Client_OnBidCreate', ('Bid sent from invalid sender: %s'):format(tostring(sender)))
-		return
-	end
 	-- Validate id
 	if not id then
 		kLoot:Error('Client_OnBidCreate', 'Bid sent with invalid id.')
