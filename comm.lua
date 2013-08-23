@@ -71,9 +71,9 @@ function kLoot:Comm_Send(command, commType, channel, ...)
 	if not command then return end
 	if commType and type(commType) == 'string' then commType = strlower(strsub(commType, 1, 1)) end
 	commType = commType or 'c'
-	channel = self:Comm_ValidateChannel(channel) and channel or self:GetTableEntry(self.comm.validChannels)
+	channel = self:Comm_ValidateChannel(channel) and channel or self:Utility_GetTableEntry(self.comm.validChannels)
 	local prefix = ('%s-%s'):format(self.comm.prefix, commType)
-	if self:InDebug() and channel == 'RAID' and self:GetPlayerCount() == 1 then
+	if self:InDebug() and channel == 'RAID' and self:Utility_GetPlayerCount() == 1 then
 		channel = 'GUILD' -- Set GUILD default channel for debug purposes if not in raid
 	end
 	self:SendCommMessage(prefix, self:Serialize(command, self:Serialize(...)), channel)

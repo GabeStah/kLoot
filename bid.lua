@@ -24,8 +24,8 @@ function kLoot:Bid_Create(auction, id, items, player, bidType, specialization, i
 	-- Check if bid exists
 	if id and self:Bid_Get(id, auction) then return end	
 	player = player or UnitName('player')
-	bidType = bidType or self:GetTableEntry(self.bidTypes, nil, true)
-	specialization = specialization or self:GetTableEntry(self.specializations)
+	bidType = bidType or self:Utility_GetTableEntry(self.bidTypes, nil, true)
+	specialization = specialization or self:Utility_GetTableEntry(self.specializations)
 	if specialization and type(specialization) == 'table' and specialization.name then
 		specialization = specialization.name
 	end
@@ -58,7 +58,7 @@ function kLoot:Bid_Create(auction, id, items, player, bidType, specialization, i
 		end	
 	end
 	
-	id = id or self:GetUniqueId()
+	id = id or self:Utility_GetUniqueId()
 	local bid = {
 		bidType = bidType,	
 		created = GetTime(),		

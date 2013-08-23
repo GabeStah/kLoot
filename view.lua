@@ -29,7 +29,7 @@ function kLoot:View_CreateDialog(id, text, width, height, margin, color)
    fontString:SetPoint('TOPLEFT', 5, -5)
    fontString:SetFont('Fonts\\FRIZQT__.TTF', 14)
    fontString:SetJustifyV('TOP')
-   fontString:SetText(('|cFF%skLoot|r|n%s'):format(self:ColorToHex(self.color.green), text))
+   fontString:SetText(('|cFF%skLoot|r|n%s'):format(self:Utility_ColorToHex(self.color.green), text))
    f:Show()
    return f
 end

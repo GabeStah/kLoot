@@ -36,7 +36,7 @@ function kLoot:Auction_Create(item, raid, id, duration, isClient)
 	-- Parse item id
 	local itemId = self:Item_Id(item)
 	if not itemId then return end
-	id = id or self:GetUniqueId()
+	id = id or self:Utility_GetUniqueId()
 	local auction = {
 		bids = {},
 		closed = false,		

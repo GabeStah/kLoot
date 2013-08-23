@@ -30,7 +30,7 @@ function kLoot:Raid_Create(id, isClient)
 	-- Check if raid exists and fail out if so
 	if id and self:Raid_Get(id) then return end
 	-- No raid, use provided id or new if needed
-	id = id or self:GetUniqueId()
+	id = id or self:Utility_GetUniqueId()
 	-- Rebuild roster
 	self:Roster_Rebuild()
 	-- Create empty raid table
@@ -56,13 +56,27 @@ end
 --[[ Delete raid from database
 ]]
 function kLoot:Raid_Delete(raid)
-	
+	raid = self:Raid_Get(raid)
+	if not raid then
+		self:Error('Raid_Delete', 'No valid raid to delete.')
+		return
+	end
+	-- Destroy first
+	self:Raid_Destroy(raid, true)
+	-- Remove from database
+	for i,v in pairs(self.db.profile.raids) do
+		if v.id == raid.id then
+			tremove(self.db.profile.raids, i)
+			break
+		end
+	end
+	self:Debug('Raid_Delete', 'Raid deleted: ', raid.id, 3)
 end
 
 --[[ Destroy raid
 ]]
 function kLoot:Raid_Destroy(raid, isClient)
-	local raid = self:Raid_Get(raid or self.db.profile.settings.raid.active)
+	raid = self:Raid_Get(raid or self.db.profile.settings.raid.active)
 	-- Deactivate active
 	if not raid then
 		self:Error('Raid_Destroy', 'No valid raid to destroy.')
@@ -135,7 +149,7 @@ end
 --[[ Generate the initial raid roster
 ]]
 function kLoot:Raid_GenerateRoster()
-	local count, roster, currentTime, name, class, online = self:GetPlayerCount(), {}, time()
+	local count, roster, currentTime, name, class, online = self:Utility_GetPlayerCount(), {}, time()
 	if count == 1 then
 		roster[UnitName('player')] = self:Actor_Create(UnitName('player'), UnitClass('player'), true, true, currentTime)
 	else

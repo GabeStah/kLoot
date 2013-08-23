@@ -16,7 +16,7 @@ commType - 'c' or 's' for client or server communication
 function kLoot:Client_OnAuctionCreate(sender, isClient, id, itemId, raidId, duration)
 	kLoot:Debug('Client_OnAuctionCreate', sender, id, itemId, raidId, duration, 3)
 	-- Ignore self
-	if kLoot:IsSelf(sender) then return end
+	if kLoot:Utility_IsSelf(sender) then return end
 	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
 		kLoot:Error('Client_OnAuctionCreate', 'Auction sent from invalid sender: ', sender)
 		return
@@ -40,7 +40,7 @@ end
 function kLoot:Client_OnBidCreate(sender, isClient, id, auctionId, items, player, bidType, specialization)
 	kLoot:Debug('Client_OnBidCreate', sender, id, auctionId, items, player, bidType, specialization, 3)
 	-- Ignore self
-	if kLoot:IsSelf(sender) then return end
+	if kLoot:Utility_IsSelf(sender) then return end
 	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
 		kLoot:Error('Client_OnBidCreate', 'Bid sent from invalid sender: ', sender)
 		return
@@ -63,7 +63,7 @@ end
 ]]
 function kLoot:Client_OnRaidCreate(sender, isClient, id)
 	-- Ignore self
-	if kLoot:IsSelf(sender) then return end
+	if kLoot:Utility_IsSelf(sender) then return end
 	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
 		kLoot:Error('Client_OnRaidCreate', 'Raid sent from invalid sender: ', sender)
 		return
@@ -83,7 +83,7 @@ end
 ]]
 function kLoot:Client_OnRaidDestroy(sender, isClient, id)
 	-- Ignore self
-	if kLoot:IsSelf(sender) then return end
+	if kLoot:Utility_IsSelf(sender) then return end
 	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
 		kLoot:Error('Client_OnRaidDestroy', 'Raid sent from invalid sender: ', sender)
 		return

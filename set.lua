@@ -135,7 +135,7 @@ data: self.sets
 ]]
 function kLoot:Set_Generate()
 	-- Reset table
-	kLoot:DestroyTable(kLoot.sets)
+	kLoot:Utility_DestroyTable(kLoot.sets)
 	-- Regenerate
 	kLoot:Set_GenerateBlizzard()
 	kLoot:Set_GenerateOutfitter()
@@ -201,7 +201,7 @@ end
 --[[ Retrieve first set of basic type
 ]]
 function kLoot:Set_GetByBidType(bidType)
-	bidType = bidType or self:GetTableEntry(self.bidTypes, nil, true)
+	bidType = bidType or self:Utility_GetTableEntry(self.bidTypes, nil, true)
 	for i,v in pairs(self.db.profile.bidding.sets) do
 		if v.bidType and v.bidType == bidType then
 			return self:Set_Get(v.set, v.addon)

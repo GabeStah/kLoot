@@ -47,7 +47,7 @@ function kLoot:Timer_Create(func,time,loop,cancel,fireOnCancel,...)
 		cancel = cancel,
 		fireOnCancel = (type(fireOnCancel) == 'nil') and true or fireOnCancel,		
 		func = func, 
-		id = self:GetUniqueId(),
+		id = self:Utility_GetUniqueId(),
 		loop = loop,
 		objectType = 'timer',
 		time = loop and (time or 0) or (GetTime() + time)})

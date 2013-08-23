@@ -4,7 +4,7 @@ local math, tostring, string, strjoin, strlen, strlower, strsplit, strsub, strtr
 local select, pairs, print, next, type, unpack = select, pairs, print, next, type, unpack
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
-function kLoot:ColorizeSubstringInString(subject, substring, r, g, b)
+function kLoot:Utility_ColorizeSubstringInString(subject, substring, r, g, b)
 	local t = {};
 	for i = 1, strlen(subject) do
 		local iStart, iEnd = string.find(strlower(subject), strlower(substring), i, strlen(substring) + i - 1)
@@ -19,7 +19,7 @@ function kLoot:ColorizeSubstringInString(subject, substring, r, g, b)
 		end
 	end
 	local sOut = '';
-	local sColor = self:RGBToHex(r*255,g*255,b*255);
+	local sColor = self:Utility_RGBToHex(r*255,g*255,b*255);
 	for i = 1, strlen(subject) do
 		if t[i] == true then
 			sOut = ('%s|CFF%s%s|r'):format(sOut, sColor, strsub(subject, i, i))
@@ -29,66 +29,25 @@ function kLoot:ColorizeSubstringInString(subject, substring, r, g, b)
 	end
 	return strlen(sOut) > 0 and sOut or nil
 end
-function kLoot:GetPlayerCount(groupType)
-	groupType = groupType or 'raid';
-	-- Check if post-MoP
-	if groupType == 'raid' then
-		return GetNumGroupMembers() - 1;
-	else
-		return GetNumSubgroupMembers() - 1;
-	end
-end
-function kLoot:Debug(...)
-	local isDevLoaded = IsAddOnLoaded('_Dev')
-	local isSpewLoaded = IsAddOnLoaded('Spew')
-	local prefix ='kLootDebug: '
-	local threshold = select(select('#', ...), ...) or 3
-	if type(threshold) ~= 'number' then threshold = 3 end
-	-- CHECK IF _DEV exists
-	if self.db.profile.debug.enabled then
-		if (threshold >= kLoot.db.profile.debug.threshold) then
-			if isSpewLoaded then
-				Spew(...)
-			elseif isDevLoaded then
-				dump(prefix, ...)
-			else
-				self:Print(ChatFrame1, ('%s%s'):format(prefix,...))			
-			end
-		end
-	end
-end
-function kLoot:Error(...)
-	if not ... then return end
-	self:Print(ChatFrame1, ('Error: %s - %s'):format(...))
-end
-function kLoot:IsSelf(player)
+
+function kLoot:Utility_IsSelf(player)
 	return (UnitName(player) == UnitName('player'))
 end
-function kLoot:OnUpdate(elapsed)
-	if not self.db.profile.debug.enableTimers then return end
-	local updateType = 'core'
-	local time, i = GetTime()
-	self.update[updateType].timeSince = (self.update[updateType].timeSince or 0) + elapsed
-	if (self.update[updateType].timeSince > self.db.profile.settings.update[updateType].interval) then	
-		-- Process timers
-		self:Timer_ProcessAll(updateType)
-		self.update[updateType].timeSince = 0
-	end
-end
-function kLoot:ColorToHex(color)
+
+function kLoot:Utility_ColorToHex(color)
 	if not color or not type(color) == 'table' then return end
 	return string.format("%02x%02x%02x", 
-		self:Round(color.r * 255),
-		self:Round(color.g * 255),
-		self:Round(color.b * 255)
+		self:Utility_Round(color.r * 255),
+		self:Utility_Round(color.g * 255),
+		self:Utility_Round(color.b * 255)
 	)
 end
-function kLoot:DestroyTable(table)
+function kLoot:Utility_DestroyTable(table)
 	for i,v in pairs(table) do
 		table[i] = nil
 	end
 end
-function kLoot:RGBToHex(r, g, b)
+function kLoot:Utility_RGBToHex(r, g, b)
 	if type(r) == 'table' then
 		g = r.g
 		b = r.b
@@ -99,14 +58,14 @@ function kLoot:RGBToHex(r, g, b)
 	b = b <= 255 and b >= 0 and b or 0
 	return string.format("%02x%02x%02x", r, g, b)
 end
-function kLoot:Round(value, decimal)
+function kLoot:Utility_Round(value, decimal)
 	if (decimal) then
 		return math.floor((value * 10^decimal) + 0.5) / (10^decimal)
 	else
 		return math.floor(value+0.5)
 	end
 end
-function kLoot:SplitString(subject, delimiter)
+function kLoot:Utility_SplitString(subject, delimiter)
 	local result = { }
 	local from  = 1
 	local delim_from, delim_to = string.find( subject, delimiter, from  )
@@ -118,13 +77,13 @@ function kLoot:SplitString(subject, delimiter)
 	table.insert( result, string.sub( subject, from  ) )
 	return result
 end
-function kLoot:GetPlayerCount()
+function kLoot:Utility_GetPlayerCount()
 	return (GetNumGroupMembers() > 0) and GetNumGroupMembers() or 1
 end
 
 --[[ Get a unique identifier
 ]]
-function kLoot:GetUniqueId()
+function kLoot:Utility_GetUniqueId()
 	local id = {}
 	local characters = {
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 
@@ -133,7 +92,7 @@ function kLoot:GetUniqueId()
 		'1', '2', '3', '4', '5', '6', '7', '8', '9'
 	}
 	local singlet
-	for i=1,self.uniqueIdLength do
+	for i=1,self.uniqueIdLength or 8 do
 		case = math.random(1,2)
 		char = math.random(1,#characters)
 		if case == 1 then
@@ -148,7 +107,7 @@ end
 
 --[[ Retrieve specialization list for player
 ]]
-function kLoot:GetSpecializations()
+function kLoot:Utility_GetSpecializations()
 	local specs
 	for i=1,GetNumSpecializations() do
 		local id, name, description, icon, background, role = GetSpecializationInfo(i)
@@ -165,7 +124,7 @@ function kLoot:GetSpecializations()
 end
 --[[ Retrieve the X entry of a non-indexed table
 ]]
-function kLoot:GetTableEntry(data, num, getIndex)
+function kLoot:Utility_GetTableEntry(data, num, getIndex)
 	if not data or not type(data) == 'table' then return end
 	num = num or 1
 	local count = 0

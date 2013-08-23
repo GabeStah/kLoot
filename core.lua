@@ -137,7 +137,7 @@ function kLoot:InitializeSettings()
 			name = 'Outfitter', 
 		},
 	}
-	self.specializations = self:GetSpecializations()
+	self.specializations = self:Utility_GetSpecializations()
 	self.uniqueIdLength = 8
 	self.update = {}
 	self.update.auction = {} -- House update script for auctions
@@ -184,6 +184,34 @@ function kLoot:LOOT_OPENED(event, ...)
 	end
 end
 
+--[[ Create debug messages
+]]
+function kLoot:Debug(...)
+	local isDevLoaded = IsAddOnLoaded('_Dev')
+	local isSpewLoaded = IsAddOnLoaded('Spew')
+	local prefix ='kLootDebug: '
+	local threshold = select(select('#', ...), ...) or 3
+	if type(threshold) ~= 'number' then threshold = 3 end
+	if self.db.profile.debug.enabled then
+		if (threshold >= kLoot.db.profile.debug.threshold) then
+			if isSpewLoaded then
+				Spew(...)
+			elseif isDevLoaded then
+				dump(prefix, ...)
+			else
+				self:Print(ChatFrame1, ('%s%s'):format(prefix,...))			
+			end
+		end
+	end
+end
+
+--[[ Output basic error messages
+]]
+function kLoot:Error(...)
+	if not ... then return end
+	self:Print(ChatFrame1, ('Error: %s - %s'):format(...))
+end
+
 --[[ Check if debug mode active
 ]]
 function kLoot:InDebug()
@@ -205,5 +233,19 @@ function kLoot:OnCommReceived(prefix, serialObject, channel, sender)
 	if success then
 		local prefix, commType = self:Comm_GetPrefix(prefix)
 		self:Comm_Receive(command, sender, commType, data)
+	end
+end
+
+--[[ Core onUpdate function for most timer handling
+]]
+function kLoot:OnUpdate(elapsed)
+	if not self.db.profile.debug.enableTimers then return end
+	local updateType = 'core'
+	local time, i = GetTime()
+	self.update[updateType].timeSince = (self.update[updateType].timeSince or 0) + elapsed
+	if (self.update[updateType].timeSince > self.db.profile.settings.update[updateType].interval) then	
+		-- Process timers
+		self:Timer_ProcessAll(updateType)
+		self.update[updateType].timeSince = 0
 	end
 end
