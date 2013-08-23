@@ -30,7 +30,7 @@ function kLoot:Raid_Create(id, isClient)
 	-- Check if raid exists and fail out if so
 	if id and self:Raid_Get(id) then return end
 	-- No raid, use provided id or new if needed
-	id = id or self:Utility_GetUniqueId()
+	id = id or self:Utility_GenerateUniqueId()
 	-- Rebuild roster
 	self:Roster_Rebuild()
 	-- Create empty raid table

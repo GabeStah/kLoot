@@ -4,6 +4,9 @@ local math, tostring, string, strjoin, strlen, strlower, strsplit, strsub, strtr
 local select, pairs, print, next, type, unpack = select, pairs, print, next, type, unpack
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
+
+--[[ Colorize part of a string
+]]
 function kLoot:Utility_ColorizeSubstringInString(subject, substring, r, g, b)
 	local t = {};
 	for i = 1, strlen(subject) do
@@ -30,10 +33,8 @@ function kLoot:Utility_ColorizeSubstringInString(subject, substring, r, g, b)
 	return strlen(sOut) > 0 and sOut or nil
 end
 
-function kLoot:Utility_IsSelf(player)
-	return (UnitName(player) == UnitName('player'))
-end
-
+--[[ Convert a color (.r, .g, .b table) to hex string
+]]
 function kLoot:Utility_ColorToHex(color)
 	if not color or not type(color) == 'table' then return end
 	return string.format("%02x%02x%02x", 
@@ -42,48 +43,16 @@ function kLoot:Utility_ColorToHex(color)
 		self:Utility_Round(color.b * 255)
 	)
 end
+
+--[[ Destroy all entries in a table, preserving table memory slot
+]]
 function kLoot:Utility_DestroyTable(table)
-	for i,v in pairs(table) do
-		table[i] = nil
-	end
-end
-function kLoot:Utility_RGBToHex(r, g, b)
-	if type(r) == 'table' then
-		g = r.g
-		b = r.b
-		r = r.r		
-	end
-	r = r <= 255 and r >= 0 and r or 0
-	g = g <= 255 and g >= 0 and g or 0
-	b = b <= 255 and b >= 0 and b or 0
-	return string.format("%02x%02x%02x", r, g, b)
-end
-function kLoot:Utility_Round(value, decimal)
-	if (decimal) then
-		return math.floor((value * 10^decimal) + 0.5) / (10^decimal)
-	else
-		return math.floor(value+0.5)
-	end
-end
-function kLoot:Utility_SplitString(subject, delimiter)
-	local result = { }
-	local from  = 1
-	local delim_from, delim_to = string.find( subject, delimiter, from  )
-	while delim_from do
-		table.insert( result, string.sub( subject, from , delim_from-1 ) )
-		from  = delim_to + 1
-		delim_from, delim_to = string.find( subject, delimiter, from  )
-	end
-	table.insert( result, string.sub( subject, from  ) )
-	return result
-end
-function kLoot:Utility_GetPlayerCount()
-	return (GetNumGroupMembers() > 0) and GetNumGroupMembers() or 1
+	for i,v in pairs(table) do table[i] = nil end
 end
 
---[[ Get a unique identifier
+--[[ Generate a unique identifier
 ]]
-function kLoot:Utility_GetUniqueId()
+function kLoot:Utility_GenerateUniqueId()
 	local id = {}
 	local characters = {
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 
@@ -105,6 +74,12 @@ function kLoot:Utility_GetUniqueId()
 	return(table.concat(id))
 end	
 
+--[[ Retrieve the player count in the party
+]]
+function kLoot:Utility_GetPlayerCount()
+	return (GetNumGroupMembers() > 0) and GetNumGroupMembers() or 1
+end
+
 --[[ Retrieve specialization list for player
 ]]
 function kLoot:Utility_GetSpecializations()
@@ -122,6 +97,7 @@ function kLoot:Utility_GetSpecializations()
 	end
 	return specs
 end
+
 --[[ Retrieve the X entry of a non-indexed table
 ]]
 function kLoot:Utility_GetTableEntry(data, num, getIndex)
@@ -133,5 +109,70 @@ function kLoot:Utility_GetTableEntry(data, num, getIndex)
 		if num == count then
 			if getIndex then return i else return v end
 		end
+	end
+end
+
+--[[ Determine if player name is current player
+]]
+function kLoot:Utility_IsSelf(player)
+	return (UnitName(player) == UnitName('player'))
+end
+
+--[[ Convert RGB to a hexadecimal color value
+]]
+function kLoot:Utility_RGBToHex(r, g, b)
+	if type(r) == 'table' then
+		g = r.g
+		b = r.b
+		r = r.r		
+	end
+	r = r <= 255 and r >= 0 and r or 0
+	g = g <= 255 and g >= 0 and g or 0
+	b = b <= 255 and b >= 0 and b or 0
+	return string.format("%02x%02x%02x", r, g, b)
+end
+
+--[[ Round a number
+]]
+function kLoot:Utility_Round(value, decimal)
+	if (decimal) then
+		return math.floor((value * 10^decimal) + 0.5) / (10^decimal)
+	else
+		return math.floor(value+0.5)
+	end
+end
+
+--[[ Split a string into a table
+]]
+function kLoot:Utility_SplitString(subject, delimiter)
+	local result = { }
+	local from  = 1
+	local delim_from, delim_to = string.find( subject, delimiter, from  )
+	while delim_from do
+		table.insert( result, string.sub( subject, from , delim_from-1 ) )
+		from  = delim_to + 1
+		delim_from, delim_to = string.find( subject, delimiter, from  )
+	end
+	table.insert( result, string.sub( subject, from  ) )
+	return result
+end
+
+--[[ Get difference in timestamps
+]]
+function kLoot:Utility_TimestampDiff(time1, time2, interval)
+	if not time1 then return end
+	interval = interval or 'second'	
+	time2 = time2 or time()
+	if not (type(time1) == 'number') then time1 = tonumber(time1) end	
+	if not (type(time2) == 'number') then time2 = tonumber(time2) end	
+	local diff = time2 - time1
+	if interval == 'second' then
+		return diff
+	elseif interval == 'minute' then
+		return diff / 60
+	elseif interval == 'hour' then
+		return diff / (60*60)
+	elseif interval == 'day' then
+		return diff / (60*60*24)
 	end
 end

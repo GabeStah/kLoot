@@ -79,7 +79,7 @@ function kLoot:InitializeSettings()
 	-- Communication settings for SendAddonMessage send/receive
 	self.comm = {
 		prefix = 'kLoot',
-		validChannels = {'RAID', 'GUILD'},
+		validChannels = {'RAID', 'GUILD', 'PARTY'},
 		validCommTypes = {'c', 's'}, -- c: client, s: server
 	}
 	self.itemSlotData = {

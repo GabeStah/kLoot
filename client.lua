@@ -18,7 +18,7 @@ function kLoot:Client_OnAuctionCreate(sender, isClient, id, itemId, raidId, dura
 	-- Ignore self
 	if kLoot:Utility_IsSelf(sender) then return end
 	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
-		kLoot:Error('Client_OnAuctionCreate', 'Auction sent from invalid sender: ', sender)
+		kLoot:Error('Client_OnAuctionCreate', ('Auction sent from invalid sender: %s'):format(tostring(sender)))
 		return
 	end
 	-- Validate id
@@ -42,7 +42,7 @@ function kLoot:Client_OnBidCreate(sender, isClient, id, auctionId, items, player
 	-- Ignore self
 	if kLoot:Utility_IsSelf(sender) then return end
 	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
-		kLoot:Error('Client_OnBidCreate', 'Bid sent from invalid sender: ', sender)
+		kLoot:Error('Client_OnBidCreate', ('Bid sent from invalid sender: %s'):format(tostring(sender)))
 		return
 	end
 	-- Validate id
@@ -65,7 +65,7 @@ function kLoot:Client_OnRaidCreate(sender, isClient, id)
 	-- Ignore self
 	if kLoot:Utility_IsSelf(sender) then return end
 	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
-		kLoot:Error('Client_OnRaidCreate', 'Raid sent from invalid sender: ', sender)
+		kLoot:Error('Client_OnRaidCreate', ('Raid sent from invalid sender: %s'):format(tostring(sender)))
 		return
 	end
 	-- Validate id
@@ -85,7 +85,7 @@ function kLoot:Client_OnRaidDestroy(sender, isClient, id)
 	-- Ignore self
 	if kLoot:Utility_IsSelf(sender) then return end
 	if not (kLoot:Role_IsAdmin(sender) or kLoot:Role_IsEditor(sender)) then
-		kLoot:Error('Client_OnRaidDestroy', 'Raid sent from invalid sender: ', sender)
+		kLoot:Error('Client_OnRaidDestroy', ('Raid sent from invalid sender: %s'):format(tostring(sender)))
 		return
 	end
 	-- Validate id
