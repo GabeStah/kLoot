@@ -43,10 +43,18 @@ function kLoot:Manual_Bid(input)
 	end
 	if type(input) == 'string' then input = strtrim(input) end
 	self:Debug('Manual_Bid', input, 3)
-	-- Send to Auction_Create
-	local auction = self:Auction_ByItem(input)
-	if not auction then return end
-	self:Bid_Create(auction)
+	local count = self:Item_LinkFromStringCount(input)
+	if not count then return end
+	local auction, items = self:Auction_ByItem(self:Item_LinkFromString(input, 1))
+	if not auction then return end	
+	if (count >= 2) then
+		items = items or {}	
+		-- Bid item(s) specified
+		for i=2,count do
+			tinsert(items, self:Item_Id(self:Item_LinkFromString(input, i)))
+		end
+	end
+	self:Bid_Create(auction, nil, items)
 end
 
 --[[ Manually start or stop a raid via /kl raid [stop/start/begin/end]

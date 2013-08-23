@@ -56,9 +56,6 @@ function kLoot:Bid_Create(auction, id, items, player, bidType, specialization, i
 		else
 			if setItems[slot] then tinsert(items, setItems[slot]) end
 		end	
-	else
-		-- items exist as ID or itemlink data
-		
 	end
 	
 	id = id or self:GetUniqueId()
