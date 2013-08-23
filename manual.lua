@@ -42,6 +42,7 @@ function kLoot:Manual_Bid(input)
 		end
 	end
 	if type(input) == 'string' then input = strtrim(input) end
+	self:Debug('Manual_Bid', input, 3)
 	-- Send to Auction_Create
 	local auction = self:Auction_ByItem(input)
 	if not auction then return end

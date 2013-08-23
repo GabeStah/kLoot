@@ -97,6 +97,29 @@ function kLoot:Item_Link(item)
 	return select(2, GetItemInfo(item))
 end
 
+--[[ Extract the link from a string
+]]
+function kLoot:Item_LinkFromString(item, instance)
+	if not item then return end
+	instance = instance or 1
+	local count = 0
+	for word in string.gmatch(item, "(|c.-|r)") do 
+		count = count + 1
+		if count == instance then return word end
+	end
+end
+
+--[[ Extract the link from a string
+]]
+function kLoot:Item_LinkFromStringCount(item)
+	if not item then return end
+	local count
+	for word in string.gmatch(item, "(|c.-|r)") do
+		count = (count or 0) + 1
+	end
+	return count
+end
+
 --[[ Get item name
 ]]
 function kLoot:Item_Name(item)
