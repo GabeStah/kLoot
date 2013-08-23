@@ -27,11 +27,12 @@ kLoot.defaults = {
 			threshold = 1,
 		},
 		editors = {
-			'Dougallxin',
-			'Kulldar',
-			'Kainhighwind',
-			'Takaoni',
-			'Tree',
+			Dougallxin = {player = 'Dougallxin', selected = false},
+			Kulldar = {player = 'Kulldar', selected = false},
+			Kulltest = {player = 'Kulltest', selected = false},
+			Kainhighwind = {player = 'Kainhighwind', selected = false},
+			Takaoni = {player = 'Takaoni', selected = false},
+			Tree = {player = 'Tree', selected = false},
 		},
 		macros = {
 			enabled = false,
@@ -281,7 +282,60 @@ kLoot.options = {
 					name = 'Sets',
 					type = 'group',
 					args = {
-						
+						bidTypes = {
+							name = 'Bid Types',
+							type = 'select',
+							desc = 'Select the Bid Type to edit.',
+							style = 'dropdown',
+							values = function() return kLoot.bidTypes end,
+							get = function(info)
+								-- Regenerate sets
+								kLoot:Set_Generate()
+								return kLoot:Options_GetSelected(kLoot.db.profile.bidding.sets, 'key')
+							end,
+							set = function(info,value)
+								kLoot:Options_SetSelected(kLoot.db.profile.bidding.sets, value)
+							end,
+							order = 1,
+						},
+						addon = {
+							name = 'Addon',
+							type = 'select',
+							desc = 'Select the addon where your set exists.',
+							style = 'dropdown',
+							values = function() return kLoot:Set_AddonList() end,
+							get = function(info)
+								local data = kLoot:Options_GetSelected(kLoot.db.profile.bidding.sets, 'value')
+								return data.addon
+							end,
+							set = function(info,value)
+								local data = kLoot:Options_GetSelected(kLoot.db.profile.bidding.sets, 'value')
+								data.addon = value
+								-- Unset the set
+								data.set = nil
+							end,
+							order = 2,
+						},
+						set = {
+							name = 'Set',
+							type = 'select',
+							desc = 'Select the set to associate with this Bid Type.',
+							style = 'dropdown',
+							values = function()
+								-- Get sets for selected addon
+								local data = kLoot:Options_GetSelected(kLoot.db.profile.bidding.sets, 'value')
+								return kLoot:Set_ListByAddon(data.addon) or {}
+							end,
+							get = function(info)
+								local data = kLoot:Options_GetSelected(kLoot.db.profile.bidding.sets, 'value')
+								return data.set
+							end,
+							set = function(info,value)
+								local data = kLoot:Options_GetSelected(kLoot.db.profile.bidding.sets, 'value')
+								data.set = value
+							end,
+							order = 3,
+						},
 					},
 				},	
 			},
@@ -320,6 +374,60 @@ kLoot.options = {
 			end,
 			guiHidden = true,			
 		},
+		role = {
+			name = 'Role',
+			type = 'group',
+			args = {
+				addEditor = {
+					name = 'Add Editor',
+					type = 'input',
+					desc = 'Add a new player as an Editor.',
+					get = function(info) return end,
+					set = function(info,value)
+						-- Verify admin status
+						if kLoot:Role_IsAdmin() then
+							kLoot:Role_Add('editor', value)
+						end
+					end,
+					order = 1,		
+				},
+				editors = {
+					name = 'Editors',
+					type = 'select',
+					desc = 'Select an Editor to edit.',
+					style = 'dropdown',
+					values = function() return kLoot:Options_GetValueList(kLoot.db.profile.editors, 'player') end,
+					get = function(info)
+						return kLoot:Options_GetSelected(kLoot.db.profile.editors, 'key')
+					end,
+					set = function(info,value)
+						kLoot:Options_SetSelected(kLoot.db.profile.editors, value)
+					end,
+					order = 2,
+				},
+				deleteEditor = {
+					name = 'Delete',
+					type = 'execute',
+					desc = function()
+						-- If selection, show
+						local selected = kLoot:Options_GetSelected(kLoot.db.profile.editors, 'player')
+						if selected then
+							return ('Delete [%s] from the Editor list.'):format(selected)
+						else
+							return 'Select an Editor from the list to delete.'
+						end
+					end,
+					func = function()
+						-- Verify admin status
+						if kLoot:Role_IsAdmin() then
+							kLoot:Role_Delete('editor', kLoot:Options_GetSelected(kLoot.db.profile.editors, 'player'))
+							kLoot:Options_ResetSelected(kLoot.db.profile.editors)
+						end
+					end,
+					order = 3,
+				},
+			},
+		},
         version = {
 			type = 'execute',
 			name = 'Version',
@@ -336,6 +444,7 @@ kLoot.options = {
 ]]
 function kLoot:Options_Default()
 	self:Options_DefaultBidding()
+	--self:Options_DefaultRole()
 end
 
 --[[ Implement bidding default settings
@@ -353,72 +462,31 @@ function kLoot:Options_DefaultBidding()
 	self:Options_ResetSelected(self.db.profile.bidding.sets)
 end
 
+--[[ Implement Role default settings
+]]
+function kLoot:Options_DefaultRole()
+	local data
+	-- bidTypes
+	for i,v in pairs(self.db.profile.editors) do
+		-- Check if string type
+		if type(v) == 'string' then
+			data = data or {}
+			tinsert(data, {
+				player = v,
+				selected = false,
+			})
+		end
+	end
+	if data then
+		self.db.profile.editors = data
+		self:Options_ResetSelected(self.db.profile.editors)
+	end
+end
+
 --[[ Generate all custom options tables
 ]]
 function kLoot:Options_Generate()
-	-- Bidding
-	self:Options_GenerateBiddingOptions()
-end
-
---[[ Create the custom bidding sets options
-]]
-function kLoot:Options_GenerateBiddingOptions()
-	self.options.args.bidding.args.sets.args = {}
-	-- Loop through bidTypes, create that dropdown
-	self.options.args.bidding.args.sets.args.bidTypes = {
-		name = 'Bid Types',
-		type = 'select',
-		desc = 'Select the Bid Type to edit.',
-		style = 'dropdown',
-		values = function() return self.bidTypes end,
-		get = function(info)
-			-- Regenerate sets
-			self:Set_Generate()
-			return self:Options_GetSelected(self.db.profile.bidding.sets, 'key')
-		end,
-		set = function(info,value)
-			self:Options_SetSelected(self.db.profile.bidding.sets, value)
-		end,
-		order = 1,
-	}	
-	self.options.args.bidding.args.sets.args.addon = {
-		name = 'Addon',
-		type = 'select',
-		desc = 'Select the addon where your set exists.',
-		style = 'dropdown',
-		values = function() return self:Set_AddonList() end,
-		get = function(info)
-			local data = self:Options_GetSelected(self.db.profile.bidding.sets, 'value')
-			return data.addon
-		end,
-		set = function(info,value)
-			local data = self:Options_GetSelected(self.db.profile.bidding.sets, 'value')
-			data.addon = value
-			-- Unset the set
-			data.set = nil
-		end,
-		order = 2,
-	}
-	self.options.args.bidding.args.sets.args.set = {
-		name = 'Set',
-		type = 'select',
-		desc = 'Select the set to associate with this Bid Type.',
-		style = 'dropdown',
-		values = function()
-			-- Get sets for selected addon
-			local data = self:Options_GetSelected(self.db.profile.bidding.sets, 'value')
-			return self:Set_ListByAddon(data.addon) or {}
-		end,
-		get = function(info)
-			local data = self:Options_GetSelected(self.db.profile.bidding.sets, 'value')
-			return data.set
-		end,
-		set = function(info,value)
-			local data = self:Options_GetSelected(self.db.profile.bidding.sets, 'value')
-			data.set = value
-		end,
-		order = 3,
-	}
+	
 end
 
 --[[ Retrieve the selected key in the data table
@@ -433,10 +501,26 @@ function kLoot:Options_GetSelected(data, selectionType)
 					return i
 				elseif selectionType == 'value' then
 					return v
+				elseif v[selectionType] then
+					return v[selectionType]
 				end
 			end
 		end
 	end
+end
+
+--[[ Retrieve the value list for dropdown selection use from table/key
+]]
+function kLoot:Options_GetValueList(data, key)
+	if not data or not key or not type(data) == 'table' then return end
+	local output
+	for i,v in pairs(data) do
+		if v[key] then
+			output = output or {}
+			output[i] = v[key]
+		end
+	end
+	return output
 end
 
 --[[ Resets the selected for the data table if necessary

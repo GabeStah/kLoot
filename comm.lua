@@ -65,6 +65,20 @@ function kLoot:Comm_Register()
 	end
 end
 
+--[[ Trigger when raid is created
+]]
+function kLoot:Comm_RoleAdd(role, player)
+	if not role or not player then return end
+	self:Comm_Send('RoleAdd', 'c', 'RAID', role, player)
+end
+
+--[[ Trigger when raid is created
+]]
+function kLoot:Comm_RoleDelete(role, player)
+	if not role or not player then return end
+	self:Comm_Send('RoleDelete', 'c', 'RAID', role, player)
+end
+
 --[[ Send a comm message
 ]]
 function kLoot:Comm_Send(command, commType, channel, ...)

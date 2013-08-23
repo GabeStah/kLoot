@@ -94,17 +94,22 @@ function kLoot:Client_OnRaidDestroy(sender, isClient, id)
 	kLoot:Raid_Destroy(id, isClient)
 end
 
---[[ Update role of player
+--[[ Add role to player
 ]]
-function kLoot:Client_OnRole(sender, isClient, player, role)
-	kLoot:Debug('Client_OnRole', sender, player, role, 2)
-	if not player then return end
+function kLoot:Client_OnRoleAdd(sender, isClient, role, player)
+	if not role or not player then return end
 	-- Validate sender as admin
 	if not kLoot:Role_IsAdmin(sender) then return end
-	-- Check if update required
-	if role then
-		kLoot:Role_Add(role, player, isClient)
-	else -- No role, remove role
-		kLoot:Role_Delete(role, player, isClient)
-	end
+	kLoot:Debug('Client_OnRoleAdd', sender, role, player, 2)	
+	kLoot:Role_Add(role, player, isClient)
+end
+
+--[[ Delete role of player
+]]
+function kLoot:Client_OnRoleDelete(sender, isClient, role, player)
+	if not role or not player then return end
+	-- Validate sender as admin
+	if not kLoot:Role_IsAdmin(sender) then return end
+	kLoot:Debug('Client_OnRoleDelete', sender, role, player, 2)
+	kLoot:Role_Delete(role, player, isClient)
 end

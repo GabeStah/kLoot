@@ -10,16 +10,22 @@ local kLoot = _G.kLoot
 @[player] string (Default: 'player') - Player name
 return boolean - Success/failure
 ]]
-function kLoot:Role_Add(role,player)
+function kLoot:Role_Add(role, player, isClient)
 	role = role or 'editor'
 	player = player or UnitName('player')
-	if role == 'editor' then
+	-- Check if role exists
+	if role == 'editor' and not self:Role_IsEditor(player) then
 		if not self:Role_IsEditor(player) then
-			tinsert(self.db.profile.editors, player)			
+			self.db.profile.editors[player] = {
+				player = player,
+				selected = false,
+			}
 		end
-		return true
 	end
-	return false
+	if not isClient then
+		-- Send comm
+		self:Comm_RoleAdd(role, player)
+	end
 end
 
 --[[ Delete role from a player.
@@ -27,20 +33,16 @@ end
 @[player] string (Default: 'player') - Player name
 return boolean - Success/failure
 ]]
-function kLoot:Role_Delete(role,player)
+function kLoot:Role_Delete(role, player, isClient)
 	role = role or 'editor'
 	player = player or UnitName('player')
 	if role == 'editor' then
-		if self:Role_IsEditor(player) then
-			for i,v in pairs(self.db.profile.editors) do
-				if v == player then
-					tremove(self.db.profile.editors, i)
-					return true
-				end
-			end
-		end
+		self.db.profile.editors[player] = nil
 	end	
-	return false
+	if not isClient then
+		-- Send comm
+		self:Comm_RoleDelete(role, player)
+	end
 end
 
 --[[ Get Role of player.
@@ -72,9 +74,7 @@ return boolean - Result of role match
 ]]
 function kLoot:Role_IsEditor(player)
 	player = player or UnitName('player')
-	for i,v in pairs(self.db.profile.editors) do
-		if v == player then return true end
-	end
+	if self.db.profile.editors[player] then return true end
 	return false
 end
 
