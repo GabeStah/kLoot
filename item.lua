@@ -5,12 +5,32 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
+--[[ Get the color rgb for item based on rarity
+]]
+function kLoot:Item_ColorByRarity(rarity)
+	return GetItemQualityColor(rarity)
+end
+
 --[[ Get item equip location
 ]]
 function kLoot:Item_EquipLocation(item)
 	item = self:Item_Id(item)
 	if not item then return end
 	return select(9, GetItemInfo(item))
+end
+
+--[[ Retrieve equipped item(s) from slot
+]]
+function kLoot:Item_EquippedBySlot(slot)
+	if not slot then return end
+	if slot == 11 or slot == 12 then
+		return GetInventoryItemLink('player', 11), GetInventoryItemLink('player', 12)
+	elseif slot == 13 or slot == 14 then
+		return GetInventoryItemLink('player', 13), GetInventoryItemLink('player', 14)
+	elseif slot == 16 or slot == 17 then
+		return GetInventoryItemLink('player', 16), GetInventoryItemLink('player', 17)
+	end	
+	return GetInventoryItemLink('player', slot)
 end
 
 --[[ Get itemId from an itemlink string
@@ -109,7 +129,7 @@ function kLoot:Item_LinkFromString(item, instance)
 	end
 end
 
---[[ Extract the link from a string
+--[[ Count the number of links to be extracted from passed string
 ]]
 function kLoot:Item_LinkFromStringCount(item)
 	if not item then return end

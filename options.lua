@@ -387,6 +387,8 @@ kLoot.options = {
 						-- Verify admin status
 						if kLoot:Role_IsAdmin() then
 							kLoot:Role_Add('editor', value)
+						else
+							kLoot:Error('You must be an Admin to edit Role data.')							
 						end
 					end,
 					order = 1,		
@@ -422,6 +424,8 @@ kLoot.options = {
 						if kLoot:Role_IsAdmin() then
 							kLoot:Role_Delete('editor', kLoot:Options_GetSelected(kLoot.db.profile.editors, 'player'))
 							kLoot:Options_ResetSelected(kLoot.db.profile.editors)
+						else
+							kLoot:Error('You must be an Admin to edit Role data.')
 						end
 					end,
 					order = 3,

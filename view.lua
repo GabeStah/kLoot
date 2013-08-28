@@ -5,6 +5,76 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
+function kLoot:View_CreateBidDialog(auction)
+	auction = self:Auction_Get(auction)
+	if not auction then return end
+	local viewId = 'Bid'
+	local width = 500
+	local height = 350
+	local color = {r=0,g=0,b=0,a=0.8}
+	local frameName = ('%s%s'):format('kLootDialog', viewId)
+		   
+	local f = _G[frameName] or CreateFrame('Frame', frameName, UIParent)
+	f.Close = f.Close or function() f:Hide() end
+	f:SetWidth(width)
+	f:SetHeight(height)
+	f.margin = 4
+	local t = f.texture or f:CreateTexture(nil,'BACKGROUND')
+	t:SetTexture(color.r, color.g, color.b, color.a)
+	t:SetAllPoints(f)
+	f.texture = t
+	f:SetPoint('TOP',0,-100)
+	
+	-- CURRENT
+	local currentString = self:View_CreateFontString(f, 'CurrentString', 'CURRENT')
+	currentString:SetPoint('TOPLEFT', (f:GetWidth() / 3) * 1 - (currentString:GetWidth() / 2), -15) -- Left third
+
+	-- AUCTION
+	local auctionString = self:View_CreateFontString(f, 'AuctionString', 'AUCTION')
+	auctionString:SetPoint('TOPRIGHT', -1 * (f:GetWidth() / 3) * 1 + (auctionString:GetWidth() / 2), -15) -- Right third	
+
+	local frame = CreateFrame("Frame", nil, f)
+	frame:Hide()
+	
+	-- TODO: Create frame widget with font string inside for SetScript interaction
+
+	--local label = frame:CreateFontString(nil, "BACKGROUND", "GameFontHighlightSmall")
+	--label:SetJustifyH("LEFT")
+	--label:SetJustifyV("TOP")
+	
+	-- AUCTION ITEM
+	local auctionItem = self:View_CreateFontString(frame, 'AuctionItem', self:Item_Name(auction.itemId))
+	auctionItem:SetTextColor(self:Item_ColorByRarity(self:Item_Rarity(auction.itemId)))
+	--auctionItem:SetPoint('TOPRIGHT', -1 * (f:GetWidth() / 3) * 1 + (auctionItem:GetWidth() / 2), -35) -- Right third
+	auctionItem:SetJustifyH("LEFT")
+	auctionItem:SetJustifyV("TOP")	
+	--[[
+	auctionItem:SetScript('OnEnter', function(self)
+		kLoot:View_ItemTooltip(self, auction.itemId)
+	end)
+	auctionItem:SetScript('OnLeave', function(self) GameTooltip:Hide() end)
+	]]
+	
+	frame:SetPoint('TOPRIGHT', -1 * (f:GetWidth() / 3) * 1 + (frame:GetWidth() / 2), -35) -- Right third
+	frame:Show()
+	
+	f:Show()
+	return f
+end
+
+--[[ Create a basic font string attached to the parent item
+]]
+function kLoot:View_CreateFontString(parent, name, text)
+	if not parent then return end
+	name = name or 'FontString'
+	local object = parent[('%s%s'):format(parent:GetName() or '',name)] or parent:CreateFontString(('%s%s'):format(parent:GetName() or '',name))
+	parent[('%s%s'):format(parent:GetName() or '',name)] = object
+	object:SetFont('Fonts\\FRIZQT__.TTF', 14)
+	object:SetJustifyV('TOP')
+	object:SetText(text)
+	return object
+end
+
 function kLoot:View_CreateDialog(id, text, width, height, margin, color)
    id = id or 'Default'
    width = width or 300
@@ -22,7 +92,7 @@ function kLoot:View_CreateDialog(id, text, width, height, margin, color)
    t:SetAllPoints(f)
    f.texture = t
    f:SetPoint('TOP',0,-100)
-      
+   
    local fontString = f.fontString or f:CreateFontString(('%s%s'):format(f:GetName(),'Text'))
    f.fontString = fontString
    fontString:SetPoint('BOTTOMRIGHT', -5, 35)
@@ -103,6 +173,19 @@ function kLoot:View_CreateDialogTextBox(parent, text, highlightText)
    textboxT:SetTexture(0, 0,0,0.3)
    textboxT:SetAllPoints(textbox)
    textbox.texture = textboxT
+end
+
+--[[ Display item tooltip attached to specified parent
+]]
+function kLoot:View_ItemTooltip(item, parent, anchorPoint, anchorFramePoint)
+	item = self:Item_Link(item)
+	if not parent or not item then return end
+	local anchorPoint = anchorPoint or 'BOTTOMLEFT'
+	local anchorFramePoint = anchorFramePoint or 'TOPLEFT'
+	GameTooltip:SetOwner(WorldFrame,'ANCHOR_NONE')
+	GameTooltip:ClearLines()
+	GameTooltip:SetPoint(anchorPoint, parent, anchorFramePoint)
+	GameTooltip:SetHyperlink(item)
 end
 
 --[[ Prompt to resume active raid

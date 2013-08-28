@@ -211,7 +211,7 @@ end
 ]]
 function kLoot:Error(...)
 	if not ... then return end
-	self:Print(ChatFrame1, ('Error: %s - %s'):format(...))
+	self:Print(ChatFrame1, ('Error: %s'):format(strjoin(' - ', ...)))
 end
 
 --[[ Check if debug mode active
