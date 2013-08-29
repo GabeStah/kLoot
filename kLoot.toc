@@ -12,6 +12,7 @@ actor.lua
 auction.lua
 bid.lua
 client.lua
+color.lua
 comm.lua
 events.lua
 guild.lua

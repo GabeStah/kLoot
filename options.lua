@@ -437,7 +437,7 @@ kLoot.options = {
 			name = 'Version',
 			desc = 'Check your kLoot version',
 			func = function() 
-				kLoot:Print("Version: |cFF"..kLoot:Utility_RGBToHex(0,255,0)..kLoot.version.."|r");
+				kLoot:Print("Version: |cFF"..kLoot:Color_Get(0,255,0,nil,'hex')..kLoot.version.."|r");
 			end,
 			guiHidden = true,
         },

@@ -74,8 +74,8 @@ function kLoot:Item_Id(item)
 		return item
 	end
 	-- Id (string type)
-	if type(item) == 'string' and type(tonumber(item)) == 'number' then 
-		if item == '0' then return end
+	if type(item) == 'string' or type(tonumber(item)) == 'number' then 
+		if tonumber(item) == 0 then return end
 		return tonumber(item)
 	end
 	-- Table

@@ -22,7 +22,7 @@ function kLoot:Utility_ColorizeSubstringInString(subject, substring, r, g, b)
 		end
 	end
 	local sOut = '';
-	local sColor = self:Utility_RGBToHex(r*255,g*255,b*255);
+	local sColor = self:Color_Get(r*255,g*255,b*255, nil, 'hex');
 	for i = 1, strlen(subject) do
 		if t[i] == true then
 			sOut = ('%s|CFF%s%s|r'):format(sOut, sColor, strsub(subject, i, i))
@@ -31,17 +31,6 @@ function kLoot:Utility_ColorizeSubstringInString(subject, substring, r, g, b)
 		end
 	end
 	return strlen(sOut) > 0 and sOut or nil
-end
-
---[[ Convert a color (.r, .g, .b table) to hex string
-]]
-function kLoot:Utility_ColorToHex(color)
-	if not color or not type(color) == 'table' then return end
-	return string.format("%02x%02x%02x", 
-		self:Utility_Round(color.r * 255),
-		self:Utility_Round(color.g * 255),
-		self:Utility_Round(color.b * 255)
-	)
 end
 
 --[[ Destroy all entries in a table, preserving table memory slot
@@ -112,24 +101,16 @@ function kLoot:Utility_GetTableEntry(data, num, getIndex)
 	end
 end
 
+--[[ Determine if number if integer (whole)
+]]
+function kLoot:Utility_IsInteger(value)
+	return math.floor(value) == value
+end
+
 --[[ Determine if player name is current player
 ]]
 function kLoot:Utility_IsSelf(player)
 	return (UnitName(player) == UnitName('player'))
-end
-
---[[ Convert RGB to a hexadecimal color value
-]]
-function kLoot:Utility_RGBToHex(r, g, b)
-	if type(r) == 'table' then
-		g = r.g
-		b = r.b
-		r = r.r		
-	end
-	r = r <= 255 and r >= 0 and r or 0
-	g = g <= 255 and g >= 0 and g or 0
-	b = b <= 255 and b >= 0 and b or 0
-	return string.format("%02x%02x%02x", r, g, b)
 end
 
 --[[ Round a number
