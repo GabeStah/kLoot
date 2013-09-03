@@ -26,3 +26,9 @@ set.lua
 timer.lua
 utility.lua
 view.lua
+view\View_BidDialog.lua
+view\View_Dialog.lua
+view\View_FontString.lua
+view\View_Frame.lua
+view\View_SquareButton.lua
+view\View_Texture.lua

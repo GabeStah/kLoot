@@ -8,6 +8,7 @@ local kLoot = _G.kLoot
 --[[ Get the color rgb for item based on rarity
 ]]
 function kLoot:Item_ColorByRarity(rarity)
+	if not rarity then return end
 	return GetItemQualityColor(rarity)
 end
 
@@ -16,12 +17,17 @@ end
 function kLoot:Item_EquipLocation(item)
 	item = self:Item_Id(item)
 	if not item then return end
-	return select(9, GetItemInfo(item))
+	local location = select(9, GetItemInfo(item))
+	self:Debug('Item_EquipLocation', 'location: ', location, 'item: ', item, 2)
+	return location
 end
 
 --[[ Retrieve equipped item(s) from slot
 ]]
 function kLoot:Item_EquippedBySlot(slot)
+	if slot and type(slot) == 'string' then -- assume equipLocation, get slotNumber
+		slot = self:Item_GetSlotValue(slot, 'equipLocation', 'slotNumber')
+	end
 	if not slot then return end
 	if slot == 11 or slot == 12 then
 		return GetInventoryItemLink('player', 11), GetInventoryItemLink('player', 12)
