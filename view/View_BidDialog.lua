@@ -58,15 +58,59 @@ function kLoot:View_BidDialog_Create(auction)
 	mainspecBidSquareButton:SetPoint('TOPLEFT', mainspecBidSquareButton.margin, -mainspecBidSquareButton.margin)
 	_G[('%sBottomText'):format(mainspecBidSquareButton:GetName())]:SetFont([[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]], 14)
 	
+	mainspecBidSquareButton.addEvent('OnMouseDown', function()
+		self:Debug('MainspecBid', 'OnMouseDown', dialog.auctionId, 2)
+	end)
+	
 	-- offspec bid
 	local offspecBidSquareButton = self:View_SquareButton_Create('BidOffspec', bidTypeFrame, 'O', 'Offspec', 'bidType')
 	offspecBidSquareButton:ClearAllPoints()
-	offspecBidSquareButton:SetPoint('TOPLEFT', mainspecBidSquareButton, 'TOPRIGHT', offspecBidSquareButton.margin, 0)	
+	offspecBidSquareButton:SetPoint('TOPLEFT', mainspecBidSquareButton, 'TOPRIGHT', offspecBidSquareButton.margin, 0)
+	
+	offspecBidSquareButton.addEvent('OnMouseDown', function()
+		self:Debug('OffspecBid', 'OnMouseDown', dialog.auctionId, 2)
+	end)
 	
 	-- rot bid
 	local rotBidSquareButton = self:View_SquareButton_Create('BidRot', bidTypeFrame, 'R', 'Rot', 'bidType')
 	rotBidSquareButton:ClearAllPoints()
 	rotBidSquareButton:SetPoint('TOPLEFT', offspecBidSquareButton, 'TOPRIGHT', rotBidSquareButton.margin, 0)
+	
+	rotBidSquareButton.addEvent('OnMouseDown', function()
+		self:Debug('RotBid', 'OnMouseDown', dialog.auctionId, 2)
+	end)
+	
+	-- FLAGS FRAME
+	local flagsFrame = self:View_Frame_Create('Flags', dialog, self:View_Frame_GetWidth(dialog) * 0.7, 100,  {r = 1, g = 1, b = 0, a = 0.5})
+	flagsFrame:SetPoint('TOP', bidTypeFrame, 'BOTTOM')
+	
+	-- BIS
+	local flagBISSquareButton = self:View_SquareButton_Create('FlagBIS', flagsFrame, 'B', 'BIS', 'bidFlags')
+	flagBISSquareButton:ClearAllPoints()
+	flagBISSquareButton:SetPoint('TOPLEFT', flagBISSquareButton.margin, -flagBISSquareButton.margin)
+	
+	flagBISSquareButton.addEvent('OnMouseDown', function()
+		self:Debug('BISFlag', 'OnMouseDown', dialog.auctionId, 2)
+	end)
+	
+	-- Set
+	local flagSetSquareButton = self:View_SquareButton_Create('FlagSet', flagsFrame, 'S', 'Set', 'bidFlags')
+	flagSetSquareButton:ClearAllPoints()
+	flagSetSquareButton:SetPoint('TOPLEFT', flagBISSquareButton, 'TOPRIGHT', flagSetSquareButton.margin, 0)	
+	
+	flagSetSquareButton.addEvent('OnMouseDown', function()
+		self:Debug('SetFlag', 'OnMouseDown', dialog.auctionId, 2)
+	end)
+	
+	-- Transmog
+	local flagTransmogSquareButton = self:View_SquareButton_Create('FlagTransmog', flagsFrame, 'T', 'Transmog', 'bidFlags')
+	flagTransmogSquareButton:ClearAllPoints()
+	flagTransmogSquareButton:SetPoint('TOPLEFT', flagSetSquareButton, 'TOPRIGHT', flagTransmogSquareButton.margin, 0)	
+	_G[('%sBottomText'):format(flagTransmogSquareButton:GetName())]:SetFont([[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]], 12)	
+	
+	flagTransmogSquareButton.addEvent('OnMouseDown', function()
+		self:Debug('TransmogFlag', 'OnMouseDown', dialog.auctionId, 2)
+	end)
 	
 	return dialog
 end

@@ -11,26 +11,27 @@ function kLoot:View_SquareButton_Create(name, parent, headerText, subText, categ
 	self:Debug('View_SquareButton_Create', 'name: ', name, 'parent: ', parent, 2)
 	local frame = self:View_Frame_Create(name, parent, 80, 80, standardColor or {r=0,g=0,b=0,a=0.8})
 	frame.category = category or 'default'
-	frame.objectType = 'SquareButton'
-	frame.selected = false
 	frame.color = standardColor or {r=0,g=0,b=0,a=0.8}
+	frame.objectType = 'SquareButton'	
+	frame.hoverColor = hoverColor or {r=1,g=1,b=1,a=0.8}	
+	frame.selected = false	
 	frame.standardColor = standardColor or {r=0,g=0,b=0,a=0.8}
 	frame.selectedColor = selectedColor or {r=0,g=1,b=0,a=0.8}
-	frame.hoverColor = hoverColor or {r=1,g=1,b=1,a=0.8}
-
-	frame:SetScript('OnMouseDown', function(object)
+	
+	-- Events
+	frame.addEvent('OnEnter', function()
+		self:View_UpdateColor(frame, 'OnEnter')
+	end)	
+	frame.addEvent('OnLeave', function()
+		self:View_UpdateColor(frame, 'OnLeave')
+	end)
+	frame.addEvent('OnMouseDown', function()
 		self:View_SquareButton_ResetSelections(parent, category)
-		object.selected = not object.selected
-		self:View_UpdateColor(object, 'OnMouseDown')		
-	end)
+		frame.selected = not frame.selected
+		self:View_UpdateColor(frame, 'OnMouseDown')
+	end)	
 	
-	frame:SetScript('OnEnter', function(object)
-		self:View_UpdateColor(object, 'OnEnter')
-	end)
-	frame:SetScript('OnLeave', function(object)
-		self:View_UpdateColor(object, 'OnLeave')
-	end)
-	
+	-- Texts
 	local topText = self:View_FontString_Create('HeaderText', frame, headerText)
 	topText:SetFont([[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]], 50)
 	
