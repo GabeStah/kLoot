@@ -5,6 +5,39 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
+--[[ Retrieve the default color for an object type and color type
+]]
+function kLoot:Color_Default(objectType, colorType, data)
+	objectType = objectType or 'Frame'
+	colorType = colorType or 'default'
+	data = data or self.colorDefaults
+	for i,v in pairs(data) do
+		-- Check if data[objectType] exists and has colorType
+		if i == objectType and v.colors and v.colors[colorType] then
+			return v.colors[colorType]
+		elseif i == objectType then -- objectType found, but no color records
+			return true
+		else
+			-- Check for children
+			if v.children then
+				-- Recursively loop through children and return the value found			
+				local color = self:Color_Default(objectType, colorType, v.children)
+				if color and self:Color_Get(color) then
+					return self:Color_Get(color) -- This is the matching color for objectType
+				elseif color and type(color) == 'boolean' then
+					-- Child contains objectType, but we must find matching colorType
+					if v.colors and v.colors[colorType] then 
+						return v.colors[colorType]
+					else
+						-- No colorType match for this parent found, return true to go up to next parent
+						return true
+					end
+				end
+			end
+		end	
+	end
+end
+
 --[[ Retrieve color
 ]]
 function kLoot:Color_Get(r, g, b, a, returnType)
@@ -105,6 +138,17 @@ function kLoot:Color_FromValues(r, g, b, a)
 			b = b,
 			a = a,
 		}
+	end
+end
+
+--[[ Validate the color type
+]]
+function kLoot:Color_IsValidType(colorType)
+	if not colorType then return end
+	for i,v in pairs(self.colorDefaults) do
+		for iType,vObject in pairs(v) do
+			if iType == colorType then return true end
+		end
 	end
 end
 

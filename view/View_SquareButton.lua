@@ -7,29 +7,21 @@ local kLoot = _G.kLoot
 
 --[[ Create square frame button
 ]]
-function kLoot:View_SquareButton_Create(name, parent, headerText, subText, category, standardColor, selectedColor, hoverColor)
+function kLoot:View_SquareButton_Create(name, parent, headerText, subText, category, defaultColor, selectedColor, hoverColor)
 	self:Debug('View_SquareButton_Create', 'name: ', name, 'parent: ', parent, 2)
-	local frame = self:View_Frame_Create(name, parent, 80, 80, standardColor or {r=0,g=0,b=0,a=0.8})
-	frame.category = category or 'default'
-	frame.color = standardColor or {r=0,g=0,b=0,a=0.8}
+	local frame = self:View_Button_Create(name, parent, 80, 80, defaultColor, selectedColor, hoverColor)
+	-- Flags
 	frame.objectType = 'SquareButton'	
-	frame.hoverColor = hoverColor or {r=1,g=1,b=1,a=0.8}	
-	frame.selected = false	
-	frame.standardColor = standardColor or {r=0,g=0,b=0,a=0.8}
-	frame.selectedColor = selectedColor or {r=0,g=1,b=0,a=0.8}
+	
+	-- Colors
+	self:View_SetColor(frame, 'default', defaultColor)
+	self:View_SetColor(frame, 'selected', selectedColor)
+	self:View_SetColor(frame, 'hover', hoverColor)	
 	
 	-- Events
-	frame.addEvent('OnEnter', function()
-		self:View_UpdateColor(frame, 'OnEnter')
-	end)	
-	frame.addEvent('OnLeave', function()
-		self:View_UpdateColor(frame, 'OnLeave')
-	end)
 	frame.addEvent('OnMouseDown', function()
 		self:View_SquareButton_ResetSelections(parent, category)
-		frame.selected = not frame.selected
-		self:View_UpdateColor(frame, 'OnMouseDown')
-	end)	
+	end, 1)	-- Add this to first index, to occur prior to normal button events
 	
 	-- Texts
 	local topText = self:View_FontString_Create('HeaderText', frame, headerText)
@@ -39,7 +31,42 @@ function kLoot:View_SquareButton_Create(name, parent, headerText, subText, categ
 	bottomText:SetFont([[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]], 20)
 	bottomText:SetPoint('BOTTOM')
 	
+	frame:ClearAllPoints()
 	frame:SetAllPoints()
+	return frame
+end
+
+--[[ Create basic button frame
+]]
+function kLoot:View_Button_Create(name, parent, width, height, defaultColor, selectedColor, hoverColor)
+	self:Debug('View_Button_Create', 'name: ', name, 'parent: ', parent, 2)
+	width = width or 80
+	height = height or 80
+	local frame = self:View_Frame_Create(name, parent, width, height, defaultColor)
+	-- Flags
+	frame.objectType = 'Button'
+	frame.selected = false		
+	
+	-- Colors
+	self:View_SetColor(frame, 'default', defaultColor)
+	self:View_SetColor(frame, 'selected', selectedColor)
+	self:View_SetColor(frame, 'hover', hoverColor)
+		
+	-- Events
+	frame.addEvent('OnEnter', function()
+		self:View_UpdateColor(frame, 'OnEnter')
+	end)	
+	frame.addEvent('OnLeave', function()
+		self:View_UpdateColor(frame, 'OnLeave')
+	end)
+	frame.addEvent('OnMouseDown', function()
+		frame.selected = not frame.selected
+		self:View_UpdateColor(frame, 'OnMouseDown')
+	end)
+	
+	-- Set point
+	frame:SetPoint('CENTER')
+	
 	return frame
 end
 

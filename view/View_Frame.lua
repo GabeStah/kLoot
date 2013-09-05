@@ -11,11 +11,11 @@ function kLoot:View_Frame_Create(name, parent, width, height, color)
 	name = self:View_Name(name, parent)
 	self:Debug('View_Frame_Create', 'name: ', name, 'parent: ', parent, 2)
 	local frame = _G[name] or CreateFrame('Frame', name, parent or UIParent)
+	frame.objectType = 'Frame'	
 	local width = width or 500
 	local height = height or 350
-	frame.color = color or {r=0,g=0,b=0,a=0.8}
+	self:View_SetColor(frame, 'default', color)
 	frame.margin = 4
-	frame.objectType = 'Frame'	
 	frame.validEventTypes = {
 		'OnMouseDown',
 		'OnEnter',
@@ -23,12 +23,16 @@ function kLoot:View_Frame_Create(name, parent, width, height, color)
 	}
 
 	-- Generate interaction events to react to
-	frame.addEvent = function(eventType, event)
+	frame.addEvent = function(eventType, event, index)
 		if not eventType or not event or not type(event) == 'function' then return end
 		frame.events = frame.events or {}		
 		if tContains(frame.validEventTypes, eventType) then
 			frame.events[eventType] = frame.events[eventType] or {}
-			tinsert(frame.events[eventType], event)
+			if index then
+				tinsert(frame.events[eventType], index, event)
+			else
+				tinsert(frame.events[eventType], event)
+			end
 		end
 	end
 	
@@ -44,6 +48,9 @@ function kLoot:View_Frame_Create(name, parent, width, height, color)
 		end		
 	end
 	
+	-- Destroy events
+	frame.events = nil
+	
 	-- Setup script functions to process events
 	for i,v in pairs(frame.validEventTypes) do
 		frame:SetScript(v, function() frame.processEvent(v) end)
@@ -54,7 +61,7 @@ function kLoot:View_Frame_Create(name, parent, width, height, color)
 	frame:SetHeight(height)	
 	
 	-- Create background texture
-	self:View_Texture_Create(frame, frame.color)
+	self:View_Texture_Create(frame)
 	
 	frame:Show()
 	return frame

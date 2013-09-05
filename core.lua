@@ -77,7 +77,34 @@ function kLoot:InitializeSettings()
 		blue = {r=0, g=0, b=1},
 		purple = {r=1, g=0, b=1},
 		yellow = {r=1, g=1, b=0},
-	}	
+	}
+	-- Default colors
+	-- children without a colorType will use next available parent color for matching colorType
+	self.colorDefaults = {
+		Button = {
+			children = {
+				SquareButton = {},
+			},
+			colors = {
+				default = {r=0,g=0,b=0,a=0.8},		
+				hover = {r=1,g=1,b=1,a=0.8},			
+				selected = {r=0,g=1,b=0,a=0.8},			
+			},
+		},
+		FontString = {
+			colors = {
+				default = {r=1,g=1,b=1,a=1},
+			},
+		},		
+		Frame = {
+			children = {
+				Texture = {},
+			},
+			colors = {
+				default = {r=0,g=0,b=0,a=0.8},
+			},
+		},
+	}
 	-- Communication settings for SendAddonMessage send/receive
 	self.comm = {
 		prefix = 'kLoot',

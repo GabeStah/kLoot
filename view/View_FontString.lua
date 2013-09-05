@@ -10,9 +10,10 @@ local kLoot = _G.kLoot
 function kLoot:View_FontString_Create(name, parent, text, color)
 	if not parent then return end
 	name = self:View_Name(name, parent)
-	color = color or {r=1,g=1,b=1,a=1}
 	local object = _G[name] or parent:CreateFontString(name)
 	object.objectType = 'FontString'
+	self:View_SetColor(object, 'default', color)
+	color = self:Color_Get(color) or self:Color_Get(self:View_GetColor(object, 'default'))	
 	object:SetFont([[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]], 14)
 	object:SetJustifyV('TOP')
 	object:SetText(text)

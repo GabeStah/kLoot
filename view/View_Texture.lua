@@ -9,19 +9,20 @@ local kLoot = _G.kLoot
 ]]
 function kLoot:View_Texture_Create(frame, color)
 	if not frame then return end
-	local texture = frame.texture or frame:CreateTexture(nil,'BACKGROUND')
-	texture.objectType = 'Texture'
-	color = color or frame.color or {r=0,g=0,b=0,a=0.8}
-	texture:SetTexture(color.r, color.g, color.b, color.a)
-	texture:SetAllPoints(frame)
-	frame.texture = texture
+	local object = frame.texture or frame:CreateTexture(nil,'BACKGROUND')
+	object.objectType = 'Texture'
+	self:View_SetColor(object, 'default', color)
+	color = self:Color_Get(self:View_GetColor(object, 'default'))
+	object:SetTexture(color.r, color.g, color.b, color.a)
+	object:SetAllPoints(frame)
+	frame.texture = object
 end
 
 --[[ Update texture for frame
 ]]
 function kLoot:View_Texture_Update(frame, color)
 	if not frame or not frame.texture then return end
-	color = color or frame.color
+	color = self:Color_Get(color) or self:Color_Get(self:View_GetColor(object, 'default'))
 	if not color then return end
 	frame.texture:SetTexture(color.r, color.g, color.b, color.a)
 	frame.texture:SetAllPoints(frame)

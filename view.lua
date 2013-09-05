@@ -5,6 +5,14 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
+--[[ Get the color option for a view object
+]]
+function kLoot:View_GetColor(object, colorType)
+	if not object or not object.objectType then return end
+	colorType = colorType or 'default'
+	if object.color then return object.color[colorType] end
+end
+
 --[[ Display item tooltip attached to specified parent
 ]]
 function kLoot:View_ItemTooltip(item, parent, anchorPoint, anchorFramePoint)
@@ -60,24 +68,36 @@ function kLoot:View_PromptResumeRaid()
 	end)
 end
 
+--[[ Set the color option for a view object
+]]
+function kLoot:View_SetColor(object, colorType, color)
+	if not object or not object.objectType then return end
+	colorType = colorType or 'default'
+	color = self:Color_Get(color)
+	object.color = object.color or {}	
+	if color then
+		object.color[colorType] = color
+	else
+		-- Check if objectType is found in defaults
+		object.color[colorType] = self:Color_Default(object.objectType, colorType)
+	end
+end
+
 --[[ Update color for SquareButton
 ]]
 function kLoot:View_UpdateColor(object, event)
 	if not object or not object.objectType then return end
+	local colorType = 'default'
 	if event == 'OnMouseDown' or event == 'OnLeave' then
 		if object.selected then
-			object.color = object.selectedColor
-		else
-			object.color = object.standardColor
+			colorType = 'selected'
 		end	
 	elseif event == 'OnEnter' then
-		object.color = object.hoverColor
-	else
-		object.color = object.standardColor
+		colorType = 'hover'
 	end
 	if object.objectType == 'Frame' then
-		self:View_Texture_Update(object, object.color)	
+		self:View_Texture_Update(object, self:View_GetColor(object, colorType))
 	elseif object.objectType == 'SquareButton' then	
-		self:View_Texture_Update(object, object.color)
+		self:View_Texture_Update(object, self:View_GetColor(object, colorType))
 	end
 end
