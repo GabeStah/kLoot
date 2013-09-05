@@ -36,40 +36,6 @@ function kLoot:View_SquareButton_Create(name, parent, headerText, subText, categ
 	return frame
 end
 
---[[ Create basic button frame
-]]
-function kLoot:View_Button_Create(name, parent, width, height, defaultColor, selectedColor, hoverColor)
-	self:Debug('View_Button_Create', 'name: ', name, 'parent: ', parent, 2)
-	width = width or 80
-	height = height or 80
-	local frame = self:View_Frame_Create(name, parent, width, height, defaultColor)
-	-- Flags
-	frame.objectType = 'Button'
-	frame.selected = false		
-	
-	-- Colors
-	self:View_SetColor(frame, 'default', defaultColor)
-	self:View_SetColor(frame, 'selected', selectedColor)
-	self:View_SetColor(frame, 'hover', hoverColor)
-		
-	-- Events
-	frame.addEvent('OnEnter', function()
-		self:View_UpdateColor(frame, 'OnEnter')
-	end)	
-	frame.addEvent('OnLeave', function()
-		self:View_UpdateColor(frame, 'OnLeave')
-	end)
-	frame.addEvent('OnMouseDown', function()
-		frame.selected = not frame.selected
-		self:View_UpdateColor(frame, 'OnMouseDown')
-	end)
-	
-	-- Set point
-	frame:SetPoint('CENTER')
-	
-	return frame
-end
-
 --[[ Update selection values for all SquareButtons in parent of type category
 ]]
 function kLoot:View_SquareButton_ResetSelections(parent, category)
