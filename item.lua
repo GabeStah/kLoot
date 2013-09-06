@@ -39,6 +39,34 @@ function kLoot:Item_EquippedBySlot(slot)
 	return GetInventoryItemLink('player', slot)
 end
 
+--[[ Determine current item from priorities
+]]
+function kLoot:Item_GetCurrentItem(item)
+	-- Current equipped item of lowest item level for matching slots (fingers, weapons, trinkets)
+	local itemA, itemB = self:Item_EquippedBySlot(self:Item_EquipLocation(item))
+	local itemIdA = self:Item_Id(itemA)
+	local itemIdB = self:Item_Id(itemB)
+	if itemIdA and itemIdB then
+		if self:Item_Level(itemIdA) > self:Item_Level(itemIdB) then
+			return itemB
+		else
+			return itemA
+		end
+	elseif itemIdA then
+		return itemA
+	elseif itemIdB then
+		return itemB
+	end	
+end
+
+--[[ Get list of current items to display
+]]
+function kLoot:Item_GetCurrentItemList(item)
+	item = self:Item_Id(item)
+	if not item then return end
+	-- TODO: Complete
+end
+
 --[[ Get itemId from an itemlink string
 ]]
 function kLoot:Item_GetIdFromLink(link)
@@ -80,7 +108,7 @@ function kLoot:Item_Id(item)
 		return item
 	end
 	-- Id (string type)
-	if type(item) == 'string' or type(tonumber(item)) == 'number' then 
+	if type(item) == 'string' and type(tonumber(item)) == 'number' then 
 		if tonumber(item) == 0 then return end
 		return tonumber(item)
 	end
@@ -118,7 +146,11 @@ end
 --[[ Get item link
 ]]
 function kLoot:Item_Link(item)
-	item = self:Item_Id(item)
+	if item and type(item) == 'string' and string.find(item, "^|c%x+|H(.+)|h%[.*%]") then
+		return item -- Link already detected, return
+	else
+		item = self:Item_Id(item)	
+	end
 	if not item then return end
 	return select(2, GetItemInfo(item))
 end

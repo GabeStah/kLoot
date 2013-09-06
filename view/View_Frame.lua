@@ -7,14 +7,14 @@ local kLoot = _G.kLoot
 
 --[[ Create a basic frame
 ]]
-function kLoot:View_Frame_Create(name, parent, width, height, color)
+function kLoot:View_Frame_Create(name, parent, width, height, colorOrTexture)
 	name = self:View_Name(name, parent)
 	self:Debug('View_Frame_Create', 'name: ', name, 'parent: ', parent, 2)
 	local frame = _G[name] or CreateFrame('Frame', name, parent or UIParent)
 	frame.objectType = 'Frame'	
 	local width = width or 500
 	local height = height or 350
-	self:View_SetColor(frame, 'default', color)
+	self:View_SetColor(frame, 'default', colorOrTexture)
 	frame.margin = 4
 	frame.validEventTypes = {
 		'OnMouseDown',
@@ -61,7 +61,7 @@ function kLoot:View_Frame_Create(name, parent, width, height, color)
 	frame:SetHeight(height)	
 	
 	-- Create background texture
-	self:View_Texture_Create(frame)
+	self:View_Texture_Create(frame, colorOrTexture)
 	
 	frame:Show()
 	return frame

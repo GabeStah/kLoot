@@ -98,6 +98,7 @@ function kLoot:InitializeSettings()
 		},		
 		Frame = {
 			children = {
+				Icon = {},
 				Texture = {},
 			},
 			colors = {

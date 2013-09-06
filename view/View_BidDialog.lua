@@ -17,6 +17,8 @@ function kLoot:View_BidDialog_Create(auction)
 	dialog.bidTypes = {}
 	
 	-- CURRENT
+	local currentItem = self:Item_GetCurrentItem(auction.itemId)
+	
 	local currentItemTitleString = self:View_FontString_Create('CurrentItemTitleString', dialog, 'CURRENT')
 	currentItemTitleString:SetPoint('TOPLEFT', (dialog:GetWidth() / 3) * 1 - (currentItemTitleString:GetWidth() / 2), -15) -- Left third
 
@@ -24,14 +26,17 @@ function kLoot:View_BidDialog_Create(auction)
 	currentItemFrame:SetPoint('TOP', currentItemTitleString, 'BOTTOM') -- Left third	
 
 	currentItemFrame:SetScript('OnEnter', function(self)
-		kLoot:View_ItemTooltip(auction.itemId, self)
+		kLoot:View_ItemTooltip(currentItem, self)
 	end)
 	currentItemFrame:SetScript('OnLeave', function(self) GameTooltip:Hide() end)	
 	
-	local equipped1, equipped2 = self:Item_EquippedBySlot(self:Item_EquipLocation(auction.itemId))
-	
-	local currentItemString = self:View_FontString_Create('Text', currentItemFrame, self:Item_Name(equipped1), self:Color_Get(self:Item_ColorByRarity(self:Item_Rarity(equipped1))))
+	local currentItemString = self:View_FontString_Create('Text', currentItemFrame, self:Item_Name(currentItem), self:Color_Get(self:Item_ColorByRarity(self:Item_Rarity(currentItem))))
 	currentItemString:SetAllPoints(currentItemFrame)	
+	
+	local iconPath = self:Item_Icon(currentItem)
+	local currentItemIcon = self:View_Icon_Create('CurrentIcon', dialog, nil, nil, iconPath)
+	currentItemIcon:ClearAllPoints()
+	currentItemIcon:SetPoint('CENTER', 0, -100)
 	
 	-- AUCTION
 	local auctionItemTitleString = self:View_FontString_Create('AuctionItemTitleString', dialog, 'AUCTION')
