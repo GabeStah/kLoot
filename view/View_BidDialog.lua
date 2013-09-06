@@ -5,6 +5,8 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
+--[[ Create a BidDialog frame
+]]
 function kLoot:View_BidDialog_Create(auction)
 	auction = self:Auction_Get(auction)
 	if not auction then return end
@@ -16,42 +18,12 @@ function kLoot:View_BidDialog_Create(auction)
 	dialog.auctionId = auction.id
 	dialog.bidTypes = {}
 	
+	
 	-- CURRENT
 	local currentItem = self:Item_GetCurrentItem(auction.itemId)
-	
-	local currentItemTitleString = self:View_FontString_Create('CurrentItemTitleString', dialog, 'CURRENT')
-	currentItemTitleString:SetPoint('TOPLEFT', (dialog:GetWidth() / 3) * 1 - (currentItemTitleString:GetWidth() / 2), -15) -- Left third
+	local currentItemFrame = self:View_BidDialog_CreateItemFrame('Current', currentItem, dialog)
 
-	local currentItemFrame = self:View_Frame_Create('CurrentItem', dialog, 300, 35, {r = 1, g = 0, b = 0, a = 0.7})
-	currentItemFrame:SetPoint('TOP', currentItemTitleString, 'BOTTOM') -- Left third	
-
-	currentItemFrame:SetScript('OnEnter', function(self)
-		kLoot:View_ItemTooltip(currentItem, self)
-	end)
-	currentItemFrame:SetScript('OnLeave', function(self) GameTooltip:Hide() end)	
-	
-	local currentItemString = self:View_FontString_Create('Text', currentItemFrame, self:Item_Name(currentItem), self:Color_Get(self:Item_ColorByRarity(self:Item_Rarity(currentItem))))
-	currentItemString:SetAllPoints(currentItemFrame)	
-	
-	local iconPath = self:Item_Icon(currentItem)
-	local currentItemIcon = self:View_Icon_Create('CurrentIcon', dialog, nil, nil, iconPath)
-	currentItemIcon:ClearAllPoints()
-	currentItemIcon:SetPoint('CENTER', 0, -100)
-	
-	-- AUCTION
-	local auctionItemTitleString = self:View_FontString_Create('AuctionItemTitleString', dialog, 'AUCTION')
-	auctionItemTitleString:SetPoint('TOPRIGHT', -1 * (dialog:GetWidth() / 3) * 1 + (auctionItemTitleString:GetWidth() / 2), -15) -- Right third	
-
-	local auctionItemFrame = self:View_Frame_Create('AuctionItem', dialog, 300, 35, {r = 1, g = 1, b = 0, a = 0.5})
-	auctionItemFrame:SetPoint('TOP', auctionItemTitleString, 'BOTTOM')
-
-	auctionItemFrame:SetScript('OnEnter', function(self)
-		kLoot:View_ItemTooltip(auction.itemId, self)
-	end)
-	auctionItemFrame:SetScript('OnLeave', function(self) GameTooltip:Hide() end)	
-	
-	local auctionItemString = self:View_FontString_Create('Text', auctionItemFrame, self:Item_Name(auction.itemId), self:Color_Get(self:Item_ColorByRarity(self:Item_Rarity(auction.itemId))))
-	auctionItemString:SetAllPoints(auctionItemFrame)
+	local auctionItemFrame = self:View_BidDialog_CreateItemFrame('Auction', auction.itemId, dialog)
 	
 	-- BID TYPE FRAME
 	local bidTypeFrame = self:View_Frame_Create('BidType', dialog, self:View_Frame_GetWidth(dialog) * 0.7, 100,  {r = 1, g = 1, b = 0, a = 0.5})
@@ -61,7 +33,7 @@ function kLoot:View_BidDialog_Create(auction)
 	local mainspecBidSquareButton = self:View_SquareButton_Create('BidMainspec', bidTypeFrame, 'M', 'Mainspec', 'bidType')
 	mainspecBidSquareButton:ClearAllPoints()
 	mainspecBidSquareButton:SetPoint('TOPLEFT', mainspecBidSquareButton.margin, -mainspecBidSquareButton.margin)
-	_G[('%sBottomText'):format(mainspecBidSquareButton:GetName())]:SetFont([[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]], 14)
+	mainspecBidSquareButton.setFont(14, 'bottom')
 	
 	mainspecBidSquareButton.addEvent('OnMouseDown', function()
 		self:Debug('MainspecBid', 'OnMouseDown', dialog.auctionId, 2)
@@ -111,11 +83,89 @@ function kLoot:View_BidDialog_Create(auction)
 	local flagTransmogSquareButton = self:View_SquareButton_Create('FlagTransmog', flagsFrame, 'T', 'Transmog', 'bidFlags')
 	flagTransmogSquareButton:ClearAllPoints()
 	flagTransmogSquareButton:SetPoint('TOPLEFT', flagSetSquareButton, 'TOPRIGHT', flagTransmogSquareButton.margin, 0)	
-	_G[('%sBottomText'):format(flagTransmogSquareButton:GetName())]:SetFont([[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]], 12)	
+	flagTransmogSquareButton.setFont(12, 'bottom')
 	
 	flagTransmogSquareButton.addEvent('OnMouseDown', function()
 		self:Debug('TransmogFlag', 'OnMouseDown', dialog.auctionId, 2)
 	end)
 	
+	-- Cancel button
+	local cancelButton = self:View_SquareButton_Create('Cancel', dialog, 'Cancel', nil, 'cancel')
+	cancelButton:ClearAllPoints()
+	cancelButton:SetPoint('BOTTOMLEFT')
+	cancelButton:SetWidth(150)
+	
+	cancelButton.deleteEvents('OnMouseDown')
+	
+	cancelButton.addEvent('OnMouseDown', function()
+		self:Debug('Cancel', 'OnMouseDown', dialog.auctionId, 2)
+	end)
+	
+	-- Bid button
+	local bidButton = self:View_SquareButton_Create('Bid', dialog, 'Bid', nil, 'bid')
+	bidButton:ClearAllPoints()
+	bidButton:SetPoint('BOTTOMRIGHT')
+	bidButton:SetWidth(150)
+	
+	bidButton.deleteEvents('OnMouseDown')
+	
+	bidButton.addEvent('OnMouseDown', function()
+		self:Debug('Bid', 'OnMouseDown', dialog.auctionId, 2)
+	end)	
+	
 	return dialog
+end
+
+--[[ Create an item frame for the BidDialog
+]]
+function kLoot:View_BidDialog_CreateItemFrame(name, item, parent)
+	if not name then return end
+	local tooltipFlip = false
+	if name == 'Auction' then tooltipFlip = true end
+	
+	local frame = self:View_Frame_Create(('%sItem'):format(name), parent, 300, 150)
+	if name == 'Current' then
+		frame:SetPoint('TOPLEFT', (parent:GetWidth() / 3) * 1 - (frame:GetWidth() / 2), -15) -- Left third	
+	elseif name == 'Auction' then
+		frame:SetPoint('TOPRIGHT', -1 * (parent:GetWidth() / 3) * 1 + (frame:GetWidth() / 2), -15) -- Right third
+	end
+	
+	frame:SetScript('OnEnter', function(self)
+		kLoot:View_ItemTooltip(item, frame, 
+			tooltipFlip and 'TOPLEFT' or 'TOPRIGHT', 
+			tooltipFlip and 'TOPRIGHT' or 'TOPLEFT')
+	end)
+	frame:SetScript('OnLeave', function(self) GameTooltip:Hide() end)		
+	
+	local titleString = self:View_FontString_Create('Title', frame, strupper(name))
+	titleString:SetPoint('TOPLEFT')
+	titleString:SetPoint('TOPRIGHT')
+	
+	local itemString = self:View_FontString_Create('Name', frame, self:Item_Name(item), self:Color_Get(self:Item_ColorByRarity(self:Item_Rarity(item))))
+	itemString:ClearAllPoints()
+	itemString:SetPoint('LEFT')
+	itemString:SetPoint('RIGHT')
+	itemString:SetPoint('TOP', titleString, 'BOTTOM', 0, -10)
+	itemString.setFont(20) 
+	
+	local iconPath = self:Item_Icon(item)
+	local itemIcon = self:View_Icon_Create('Icon', frame, nil, nil, iconPath)
+	itemIcon:ClearAllPoints()
+	itemIcon:SetPoint('TOP', itemString, 'BOTTOM', 0, -10)
+	
+	itemIcon:SetScript('OnEnter', function(self)
+		kLoot:View_ItemTooltip(item, frame, 
+			tooltipFlip and 'TOPLEFT' or 'TOPRIGHT', 
+			tooltipFlip and 'TOPRIGHT' or 'TOPLEFT')
+	end)
+	itemIcon:SetScript('OnLeave', function(self) GameTooltip:Hide() end)	
+	
+	local itemLevel = self:View_FontString_Create('Level', frame, self:Item_Level(item))
+	itemLevel:ClearAllPoints()
+	itemLevel:SetPoint('LEFT')
+	itemLevel:SetPoint('RIGHT')
+	itemLevel:SetPoint('TOP', itemIcon, 'BOTTOM', 0, -10)
+	itemLevel.setFont(20)
+	
+	return frame
 end

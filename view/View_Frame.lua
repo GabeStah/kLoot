@@ -36,6 +36,15 @@ function kLoot:View_Frame_Create(name, parent, width, height, colorOrTexture)
 		end
 	end
 	
+	-- Delete all events for matching type
+	frame.deleteEvents = function(eventType)
+		if eventType and tContains(frame.validEventTypes, eventType) then
+			if frame.events and frame.events[eventType] then
+				wipe(frame.events[eventType])
+			end
+		end
+	end
+	
 	-- Process previously added events
 	frame.processEvent = function(eventType)
 		if eventType and tContains(frame.validEventTypes, eventType) then

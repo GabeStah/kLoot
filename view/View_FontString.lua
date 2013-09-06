@@ -14,6 +14,14 @@ function kLoot:View_FontString_Create(name, parent, text, color)
 	object.objectType = 'FontString'
 	self:View_SetColor(object, 'default', color)
 	color = self:Color_Get(color) or self:Color_Get(self:View_GetColor(object, 'default'))	
+	-- Methods
+	object.setFont = function(size, path)
+		textType = textType or 'header'
+		path = path or [[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]]
+		size = size or 14
+		object:SetFont(path, size)
+	end		
+
 	object:SetFont([[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]], 14)
 	object:SetJustifyV('TOP')
 	object:SetText(text)

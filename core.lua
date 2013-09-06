@@ -72,6 +72,7 @@ function kLoot:InitializeSettings()
 		rot = 'Rot',
 	}
 	self.color = {
+		clear = {r=0, g=0, b=0, a=0},
 		red = {r=1, g=0, b=0},
 		green = {r=0, g=1, b=0},
 		blue = {r=0, g=0, b=1},
@@ -102,7 +103,7 @@ function kLoot:InitializeSettings()
 				Texture = {},
 			},
 			colors = {
-				default = {r=0,g=0,b=0,a=0.8},
+				default = self.color.clear,
 			},
 		},
 	}

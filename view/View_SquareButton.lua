@@ -31,6 +31,18 @@ function kLoot:View_SquareButton_Create(name, parent, headerText, subText, categ
 	bottomText:SetFont([[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]], 20)
 	bottomText:SetPoint('BOTTOM')
 	
+	-- Methods
+	frame.setFont = function(size, textType, path)
+		textType = textType or 'header'
+		path = path or [[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]]
+		size = size or 50
+		if textType == 'header' then
+			topText:SetFont(path, size)
+		elseif textType == 'bottom' then
+			bottomText:SetFont(path, size)
+		end
+	end	
+	
 	frame:ClearAllPoints()
 	frame:SetAllPoints()
 	return frame

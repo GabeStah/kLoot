@@ -15,26 +15,7 @@ function kLoot:View_Icon_Create(name, parent, width, height, icon)
 	-- Flags
 	frame.objectType = 'Icon'
 	frame.selected = false
-	
-	--[[
-	-- Colors
-	self:View_SetColor(frame, 'default', defaultColor)
-	self:View_SetColor(frame, 'selected', selectedColor)
-	self:View_SetColor(frame, 'hover', hoverColor)
 		
-	-- Events
-	frame.addEvent('OnEnter', function()
-		self:View_UpdateColor(frame, 'OnEnter')
-	end)	
-	frame.addEvent('OnLeave', function()
-		self:View_UpdateColor(frame, 'OnLeave')
-	end)
-	frame.addEvent('OnMouseDown', function()
-		frame.selected = not frame.selected
-		self:View_UpdateColor(frame, 'OnMouseDown')
-	end)
-	]]
-	
 	-- Set point
 	frame:SetPoint('CENTER')
 	
