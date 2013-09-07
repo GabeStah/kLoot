@@ -141,17 +141,6 @@ function kLoot:Color_FromValues(r, g, b, a)
 	end
 end
 
---[[ Validate the color type
-]]
-function kLoot:Color_IsValidType(colorType)
-	if not colorType then return end
-	for i,v in pairs(self.colorDefaults) do
-		for iType,vObject in pairs(v) do
-			if iType == colorType then return true end
-		end
-	end
-end
-
 --[[ Convert color to hex
 ]]
 function kLoot:Color_ToHex(r, g, b, a)

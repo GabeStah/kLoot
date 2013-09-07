@@ -7,7 +7,7 @@ local kLoot = _G.kLoot
 
 --[[ Create square frame button
 ]]
-function kLoot:View_SquareButton_Create(name, parent, headerText, subText, category, defaultColor, selectedColor, hoverColor)
+function kLoot:View_SquareButton_Create(name, parent, headerText, subText, defaultColor, selectedColor, hoverColor)
 	self:Debug('View_SquareButton_Create', 'name: ', name, 'parent: ', parent, 2)
 	local frame = self:View_Button_Create(name, parent, 80, 80, defaultColor, selectedColor, hoverColor)
 	-- Flags
@@ -17,12 +17,7 @@ function kLoot:View_SquareButton_Create(name, parent, headerText, subText, categ
 	self:View_SetColor(frame, 'default', defaultColor)
 	self:View_SetColor(frame, 'selected', selectedColor)
 	self:View_SetColor(frame, 'hover', hoverColor)	
-	
-	-- Events
-	frame.addEvent('OnMouseDown', function()
-		self:View_SquareButton_ResetSelections(parent, category)
-	end, 1)	-- Add this to first index, to occur prior to normal button events
-	
+		
 	-- Texts
 	local topText = self:View_FontString_Create('HeaderText', frame, headerText)
 	topText:SetFont([[Interface\AddOns\kLoot\media\fonts\DORISPP.TTF]], 50)
@@ -45,23 +40,7 @@ function kLoot:View_SquareButton_Create(name, parent, headerText, subText, categ
 	
 	frame:ClearAllPoints()
 	frame:SetAllPoints()
+	-- Color redraw
+	self:View_UpdateColor(frame)
 	return frame
-end
-
---[[ Update selection values for all SquareButtons in parent of type category
-]]
-function kLoot:View_SquareButton_ResetSelections(parent, category)
-	if not parent or not parent:GetNumChildren() then return end
-	category = category or 'default'
-	for i,v in ipairs({parent:GetChildren()}) do
-		if v.objectType and v.objectType == 'SquareButton' then
-			v.selected = false
-			self:View_UpdateColor(v) -- Reset color
-		else
-			-- Check for children and recursively loop
-			if v:GetNumChildren() then
-				self:View_SquareButton_ResetSelections(v, category)
-			end
-		end
-	end
 end

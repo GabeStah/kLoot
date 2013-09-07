@@ -23,33 +23,33 @@ function kLoot:View_Frame_Create(name, parent, width, height, colorOrTexture)
 	}
 
 	-- Generate interaction events to react to
-	frame.addEvent = function(eventType, event, index)
+	function frame:addEvent(eventType, event, index)
 		if not eventType or not event or not type(event) == 'function' then return end
-		frame.events = frame.events or {}		
-		if tContains(frame.validEventTypes, eventType) then
-			frame.events[eventType] = frame.events[eventType] or {}
+		self.events = self.events or {}		
+		if tContains(self.validEventTypes, eventType) then
+			self.events[eventType] = self.events[eventType] or {}
 			if index then
-				tinsert(frame.events[eventType], index, event)
+				tinsert(self.events[eventType], index, event)
 			else
-				tinsert(frame.events[eventType], event)
+				tinsert(self.events[eventType], event)
 			end
 		end
 	end
 	
 	-- Delete all events for matching type
-	frame.deleteEvents = function(eventType)
-		if eventType and tContains(frame.validEventTypes, eventType) then
-			if frame.events and frame.events[eventType] then
-				wipe(frame.events[eventType])
+	function frame:deleteEvents(eventType)
+		if eventType and tContains(self.validEventTypes, eventType) then
+			if self.events and self.events[eventType] then
+				wipe(self.events[eventType])
 			end
 		end
 	end
 	
 	-- Process previously added events
-	frame.processEvent = function(eventType)
-		if eventType and tContains(frame.validEventTypes, eventType) then
-			if not frame.events or not frame.events[eventType] then return end
-			for i,v in ipairs(frame.events[eventType]) do
+	function frame:processEvent(eventType)
+		if eventType and tContains(self.validEventTypes, eventType) then
+			if not self.events or not self.events[eventType] then return end
+			for i,v in ipairs(self.events[eventType]) do
 				if type(v) == 'function' then
 					v() -- run event
 				end
@@ -62,7 +62,7 @@ function kLoot:View_Frame_Create(name, parent, width, height, colorOrTexture)
 	
 	-- Setup script functions to process events
 	for i,v in pairs(frame.validEventTypes) do
-		frame:SetScript(v, function() frame.processEvent(v) end)
+		frame:SetScript(v, function(self) self:processEvent(v) end)
 	end
 	
 	-- Generate dimensions
@@ -71,7 +71,7 @@ function kLoot:View_Frame_Create(name, parent, width, height, colorOrTexture)
 	
 	-- Create background texture
 	self:View_Texture_Create(frame, colorOrTexture)
-	
+
 	frame:Show()
 	return frame
 end

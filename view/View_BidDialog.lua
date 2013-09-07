@@ -17,8 +17,7 @@ function kLoot:View_BidDialog_Create(auction)
 	dialog:Show()	
 	dialog.auctionId = auction.id
 	dialog.bidTypes = {}
-	
-	
+		
 	-- CURRENT
 	local currentItem = self:Item_GetCurrentItem(auction.itemLink)
 	local currentItemFrame = self:View_BidDialog_CreateItemFrame('Current', currentItem, dialog)
@@ -30,30 +29,30 @@ function kLoot:View_BidDialog_Create(auction)
 	bidTypeFrame:SetPoint('CENTER')
 	
 	-- normal bid
-	local mainspecBidSquareButton = self:View_SquareButton_Create('BidMainspec', bidTypeFrame, 'M', 'Mainspec', 'bidType')
+	local mainspecBidSquareButton = self:View_SquareCategoryButton_Create('BidMainspec', bidTypeFrame, 'bidType', 'M', 'Mainspec')
 	mainspecBidSquareButton:ClearAllPoints()
 	mainspecBidSquareButton:SetPoint('TOPLEFT', mainspecBidSquareButton.margin, -mainspecBidSquareButton.margin)
 	mainspecBidSquareButton.setFont(14, 'bottom')
 	
-	mainspecBidSquareButton.addEvent('OnMouseDown', function()
+	mainspecBidSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('MainspecBid', 'OnMouseDown', dialog.auctionId, 2)
 	end)
 	
 	-- offspec bid
-	local offspecBidSquareButton = self:View_SquareButton_Create('BidOffspec', bidTypeFrame, 'O', 'Offspec', 'bidType')
+	local offspecBidSquareButton = self:View_SquareCategoryButton_Create('BidOffspec', bidTypeFrame, 'bidType', 'O', 'Offspec')
 	offspecBidSquareButton:ClearAllPoints()
 	offspecBidSquareButton:SetPoint('TOPLEFT', mainspecBidSquareButton, 'TOPRIGHT', offspecBidSquareButton.margin, 0)
 	
-	offspecBidSquareButton.addEvent('OnMouseDown', function()
+	offspecBidSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('OffspecBid', 'OnMouseDown', dialog.auctionId, 2)
 	end)
 	
 	-- rot bid
-	local rotBidSquareButton = self:View_SquareButton_Create('BidRot', bidTypeFrame, 'R', 'Rot', 'bidType')
+	local rotBidSquareButton = self:View_SquareCategoryButton_Create('BidRot', bidTypeFrame, 'bidType', 'R', 'Rot')
 	rotBidSquareButton:ClearAllPoints()
 	rotBidSquareButton:SetPoint('TOPLEFT', offspecBidSquareButton, 'TOPRIGHT', rotBidSquareButton.margin, 0)
 	
-	rotBidSquareButton.addEvent('OnMouseDown', function()
+	rotBidSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('RotBid', 'OnMouseDown', dialog.auctionId, 2)
 	end)
 	
@@ -62,57 +61,58 @@ function kLoot:View_BidDialog_Create(auction)
 	flagsFrame:SetPoint('TOP', bidTypeFrame, 'BOTTOM')
 	
 	-- BIS
-	local flagBISSquareButton = self:View_SquareButton_Create('FlagBIS', flagsFrame, 'B', 'BIS', 'bidFlags')
+	local flagBISSquareButton = self:View_SquareButton_Create('FlagBIS', flagsFrame, 'B', 'BIS')
 	flagBISSquareButton:ClearAllPoints()
 	flagBISSquareButton:SetPoint('TOPLEFT', flagBISSquareButton.margin, -flagBISSquareButton.margin)
 	
-	flagBISSquareButton.addEvent('OnMouseDown', function()
+	flagBISSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('BISFlag', 'OnMouseDown', dialog.auctionId, 2)
 	end)
 	
 	-- Set
-	local flagSetSquareButton = self:View_SquareButton_Create('FlagSet', flagsFrame, 'S', 'Set', 'bidFlags')
+	local flagSetSquareButton = self:View_SquareButton_Create('FlagSet', flagsFrame, 'S', 'Set')
 	flagSetSquareButton:ClearAllPoints()
 	flagSetSquareButton:SetPoint('TOPLEFT', flagBISSquareButton, 'TOPRIGHT', flagSetSquareButton.margin, 0)	
 	
-	flagSetSquareButton.addEvent('OnMouseDown', function()
+	flagSetSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('SetFlag', 'OnMouseDown', dialog.auctionId, 2)
 	end)
 	
 	-- Transmog
-	local flagTransmogSquareButton = self:View_SquareButton_Create('FlagTransmog', flagsFrame, 'T', 'Transmog', 'bidFlags')
+	local flagTransmogSquareButton = self:View_SquareButton_Create('FlagTransmog', flagsFrame, 'T', 'Transmog')
 	flagTransmogSquareButton:ClearAllPoints()
 	flagTransmogSquareButton:SetPoint('TOPLEFT', flagSetSquareButton, 'TOPRIGHT', flagTransmogSquareButton.margin, 0)	
 	flagTransmogSquareButton.setFont(12, 'bottom')
 	
-	flagTransmogSquareButton.addEvent('OnMouseDown', function()
+	flagTransmogSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('TransmogFlag', 'OnMouseDown', dialog.auctionId, 2)
 	end)
 	
 	-- Cancel button
-	local cancelButton = self:View_SquareButton_Create('Cancel', dialog, 'Cancel', nil, 'cancel')
+	local cancelButton = self:View_SquareButton_Create('Cancel', dialog, 'Cancel')
 	cancelButton:ClearAllPoints()
 	cancelButton:SetPoint('BOTTOMLEFT')
 	cancelButton:SetWidth(150)
 	
-	cancelButton.deleteEvents('OnMouseDown')
+	cancelButton:deleteEvents('OnMouseDown')
 	
-	cancelButton.addEvent('OnMouseDown', function()
+	cancelButton:addEvent('OnMouseDown', function()
 		self:Debug('Cancel', 'OnMouseDown', dialog.auctionId, 2)
 	end)
 	
 	-- Bid button
-	local bidButton = self:View_SquareButton_Create('Bid', dialog, 'Bid', nil, 'bid')
+	local bidButton = self:View_SquareButton_Create('Bid', dialog, 'Bid')
 	bidButton:ClearAllPoints()
 	bidButton:SetPoint('BOTTOMRIGHT')
 	bidButton:SetWidth(150)
 	
-	bidButton.deleteEvents('OnMouseDown')
+	bidButton:deleteEvents('OnMouseDown')
 	
-	bidButton.addEvent('OnMouseDown', function()
+	bidButton:addEvent('OnMouseDown', function()
 		self:Debug('Bid', 'OnMouseDown', dialog.auctionId, 2)
 	end)	
-	
+	-- Color redraw
+	self:View_UpdateColor(frame)
 	return dialog
 end
 

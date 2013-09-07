@@ -105,19 +105,23 @@ function kLoot:Item_Id(item)
 	-- Id
 	if type(item) == 'number' then 
 		if item == 0 then return nil end
+		GetItemInfo(item) -- Cache item
 		return item
 	end
 	-- Id (string type)
 	if type(item) == 'string' and type(tonumber(item)) == 'number' then 
 		if tonumber(item) == 0 then return end
+		GetItemInfo(tonumber(item)) -- Cache item
 		return tonumber(item)
 	end
 	-- Table
 	if type(item) == 'table' then
 		if item.itemId and type(tonumber(item.itemId)) == 'number' then
+			GetItemInfo(tonumber(item.itemId)) -- Cache item
 			return tonumber(item.itemId)
 		end
 		if item.id and type(tonumber(item.id)) == 'number' then
+			GetItemInfo(tonumber(item.id)) -- Cache item
 			return tonumber(item.id)
 		end
 	end
@@ -125,14 +129,21 @@ function kLoot:Item_Id(item)
 	local found, _, itemString = string.find(item, "^|c%x+|H(.+)|h%[.*%]")
 	if itemString then 
 		itemId = select(2, strsplit(':', itemString))
+		GetItemInfo(tonumber(itemId)) -- Cache item
 		return tonumber(itemId) 
 	end
 	-- Item string
 	_, itemId = strsplit(":", item)
-	if type(item) == 'string' and itemId then return tonumber(itemId) end
+	if type(item) == 'string' and itemId then
+		GetItemInfo(tonumber(itemId)) -- Cache item
+		return tonumber(itemId)
+	end
 	-- Name	
 	local _, itemLink = GetItemInfo(item)
-	if itemLink then return self:Item_Id(itemLink) end
+	if itemLink then
+		GetItemInfo(itemLink) -- Cache item	
+		return self:Item_Id(itemLink)
+	end
 end
 
 --[[ Get item level
@@ -147,6 +158,7 @@ end
 ]]
 function kLoot:Item_Link(item)
 	if item and type(item) == 'string' and string.find(item, "^|c%x+|H(.+)|h%[.*%]") then
+		GetItemInfo(item) -- Cache
 		return item -- Link already detected, return
 	else
 		item = self:Item_Id(item)	

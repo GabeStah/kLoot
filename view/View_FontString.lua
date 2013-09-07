@@ -27,5 +27,7 @@ function kLoot:View_FontString_Create(name, parent, text, color)
 	object:SetText(text)
 	object:SetTextColor(color.r, color.g, color.b, color.a)
 	object:SetPoint('CENTER')
+	-- Color redraw
+	self:View_UpdateColor(frame)	
 	return object
 end

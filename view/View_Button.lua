@@ -14,7 +14,7 @@ function kLoot:View_Button_Create(name, parent, width, height, defaultColor, sel
 	local frame = self:View_Frame_Create(name, parent, width, height, defaultColor)
 	-- Flags
 	frame.objectType = 'Button'
-	frame.selected = false		
+	frame.selected = false
 	
 	-- Colors
 	self:View_SetColor(frame, 'default', defaultColor)
@@ -22,19 +22,20 @@ function kLoot:View_Button_Create(name, parent, width, height, defaultColor, sel
 	self:View_SetColor(frame, 'hover', hoverColor)
 		
 	-- Events
-	frame.addEvent('OnEnter', function()
+	frame:addEvent('OnEnter', function()
 		self:View_UpdateColor(frame, 'OnEnter')
 	end)	
-	frame.addEvent('OnLeave', function()
+	frame:addEvent('OnLeave', function()
 		self:View_UpdateColor(frame, 'OnLeave')
 	end)
-	frame.addEvent('OnMouseDown', function()
-		frame.selected = not frame.selected
+	frame:addEvent('OnMouseDown', function()
+		self:View_SetFlag(frame, 'selected', not self:View_GetFlag(frame, 'selected'))
 		self:View_UpdateColor(frame, 'OnMouseDown')
 	end)
 	
 	-- Set point
 	frame:SetPoint('CENTER')
-	
+	-- Color redraw
+	self:View_UpdateColor(frame)
 	return frame
 end

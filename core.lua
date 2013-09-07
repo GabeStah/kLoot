@@ -82,16 +82,6 @@ function kLoot:InitializeSettings()
 	-- Default colors
 	-- children without a colorType will use next available parent color for matching colorType
 	self.colorDefaults = {
-		Button = {
-			children = {
-				SquareButton = {},
-			},
-			colors = {
-				default = {r=0,g=0,b=0,a=0.8},		
-				hover = {r=1,g=1,b=1,a=0.8},			
-				selected = {r=0,g=1,b=0,a=0.8},			
-			},
-		},
 		FontString = {
 			colors = {
 				default = {r=1,g=1,b=1,a=1},
@@ -100,7 +90,20 @@ function kLoot:InitializeSettings()
 		Frame = {
 			children = {
 				Icon = {},
-				Texture = {},
+				Button = {
+					children = {
+						SquareButton = {
+							children = {
+								SquareCategoryButton = {},
+							},
+						},
+					},
+					colors = {
+						default = {r=0,g=0,b=0,a=0.8},		
+						hover = {r=1,g=1,b=1,a=0.8},			
+						selected = {r=0,g=1,b=0,a=0.8},			
+					},
+				},
 			},
 			colors = {
 				default = self.color.clear,

@@ -33,4 +33,5 @@ view\View_FontString.lua
 view\View_Frame.lua
 view\View_Icon.lua
 view\View_SquareButton.lua
+view\View_SquareCategoryButton.lua
 view\View_Texture.lua

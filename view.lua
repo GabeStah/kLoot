@@ -13,6 +13,13 @@ function kLoot:View_GetColor(object, colorType)
 	if object.color then return object.color[colorType] end
 end
 
+--[[ Get object value
+]]
+function kLoot:View_GetFlag(object, flag)
+	if not object then return end
+	return object[flag]
+end
+
 --[[ Display item tooltip attached to specified parent
 ]]
 function kLoot:View_ItemTooltip(item, parent, anchorPoint, anchorFramePoint)
@@ -74,13 +81,23 @@ function kLoot:View_SetColor(object, colorType, color)
 	if not object or not object.objectType then return end
 	colorType = colorType or 'default'
 	color = self:Color_Get(color)
-	object.color = object.color or {}	
+	object.color = object.color or {}
 	if color then
 		object.color[colorType] = color
 	else
+		if object.objectType == 'SquareCategoryButton' and object:GetName() == 'kLootDialogBidBidTypeBidMainspec' then
+			Spew('set color: ', self:Color_Default(object.objectType, colorType), colorType)
+		end
 		-- Check if objectType is found in defaults
 		object.color[colorType] = self:Color_Default(object.objectType, colorType)
 	end
+end
+
+--[[ Set object value
+]]
+function kLoot:View_SetFlag(object, flag, value)
+	if not object then return end
+	object[flag] = value
 end
 
 --[[ Update color for SquareButton
@@ -95,9 +112,5 @@ function kLoot:View_UpdateColor(object, event)
 	elseif event == 'OnEnter' then
 		colorType = 'hover'
 	end
-	if object.objectType == 'Frame' then
-		self:View_Texture_Update(object, self:View_GetColor(object, colorType))
-	elseif object.objectType == 'SquareButton' then	
-		self:View_Texture_Update(object, self:View_GetColor(object, colorType))
-	end
+	self:View_Texture_Update(object, self:View_GetColor(object, colorType))
 end

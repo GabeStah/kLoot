@@ -14,8 +14,8 @@ function kLoot:View_Texture_Create(frame, color)
 	if type(color) == 'string' then
 		object:SetTexture(color)
 	else
-		self:View_SetColor(object, 'default', color)
-		color = self:Color_Get(self:View_GetColor(object, 'default'))
+		self:View_SetColor(frame, 'default', color)
+		color = self:Color_Get(self:View_GetColor(frame, 'default'))		
 		object:SetTexture(color.r, color.g, color.b, color.a)
 	end
 	object:SetAllPoints(frame)
@@ -27,10 +27,9 @@ end
 function kLoot:View_Texture_Update(frame, color)
 	if not frame or not frame.texture then return end
 	if type(color) == 'string' then
-		if not color then return end
 		frame.texture:SetTexture(color)
 	else
-		color = self:Color_Get(color) or self:Color_Get(self:View_GetColor(object, 'default'))
+		color = self:Color_Get(color) or self:Color_Get(self:View_GetColor(frame, 'default'))
 		if not color then return end
 		frame.texture:SetTexture(color.r, color.g, color.b, color.a)
 	end
