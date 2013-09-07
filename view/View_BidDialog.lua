@@ -20,10 +20,10 @@ function kLoot:View_BidDialog_Create(auction)
 	
 	
 	-- CURRENT
-	local currentItem = self:Item_GetCurrentItem(auction.itemId)
+	local currentItem = self:Item_GetCurrentItem(auction.itemLink)
 	local currentItemFrame = self:View_BidDialog_CreateItemFrame('Current', currentItem, dialog)
 
-	local auctionItemFrame = self:View_BidDialog_CreateItemFrame('Auction', auction.itemId, dialog)
+	local auctionItemFrame = self:View_BidDialog_CreateItemFrame('Auction', auction.itemLink, dialog)
 	
 	-- BID TYPE FRAME
 	local bidTypeFrame = self:View_Frame_Create('BidType', dialog, self:View_Frame_GetWidth(dialog) * 0.7, 100,  {r = 1, g = 1, b = 0, a = 0.5})

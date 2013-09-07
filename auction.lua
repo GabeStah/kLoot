@@ -35,6 +35,7 @@ function kLoot:Auction_Create(item, raid, id, duration, isClient)
 	end
 	-- Parse item id
 	local itemId = self:Item_Id(item)
+	local itemLink = self:Item_Link(item)
 	if not itemId then return end
 	id = id or self:Utility_GenerateUniqueId()
 	local auction = {
@@ -44,6 +45,7 @@ function kLoot:Auction_Create(item, raid, id, duration, isClient)
 		expiration = GetTime() + (duration or self.db.profile.auction.duration),		
 		id = id,
 		itemId = itemId,
+		itemLink = itemLink,
 		objectType = 'auction',		
 		timestamp = time(),
 	}
@@ -52,7 +54,7 @@ function kLoot:Auction_Create(item, raid, id, duration, isClient)
 	
 	if not isClient then
 		-- Send comm
-		self:Comm_AuctionCreate(id, itemId, raid.id, self.db.profile.auction.duration)
+		self:Comm_AuctionCreate(id, itemLink, raid.id, self.db.profile.auction.duration)
 	end
 end
 
