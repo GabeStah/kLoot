@@ -58,7 +58,7 @@ function kLoot:Manual_Bid(input)
 		local set = self:Set_GetByBidType(bidType)
 		items = self:Set_GetItemsByAuction(set, auction)
 	end
-	self:Bid_Create(auction, nil, items, nil, bidType)
+	self:Bid_Create(nil, auction, items, nil, bidType)
 end
 
 --[[ Manually start or stop a raid via /kl raid [stop/start/begin/end]

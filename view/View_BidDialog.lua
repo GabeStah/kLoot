@@ -16,8 +16,7 @@ function kLoot:View_BidDialog_Create(auction)
 	dialog:SetPoint('TOP', 0, -100)
 	dialog:Show()	
 	dialog.auctionId = auction.id
-	dialog.bidTypes = {}
-		
+			
 	-- CURRENT
 	local currentItem = self:Item_GetCurrentItem(auction.itemLink)
 	local currentItemFrame = self:View_BidDialog_CreateItemFrame('Current', currentItem, dialog)
@@ -98,6 +97,10 @@ function kLoot:View_BidDialog_Create(auction)
 	
 	cancelButton:addEvent('OnMouseDown', function()
 		self:Debug('Cancel', 'OnMouseDown', dialog.auctionId, 2)
+		local bid = self:Bid_ByPlayer(auction)
+		if bid then
+			self:Bid_Cancel(bid, auction)
+		end
 	end)
 	
 	-- Bid button
@@ -110,7 +113,31 @@ function kLoot:View_BidDialog_Create(auction)
 	
 	bidButton:addEvent('OnMouseDown', function()
 		self:Debug('Bid', 'OnMouseDown', dialog.auctionId, 2)
+		if dialog.getBidType() then
+			-- Generate bid
+			self:Bid_Create(
+				nil, -- No id, new bid passed			
+				auction,
+				currentItemFrame.getItems(), -- Items table
+				nil, -- Current player
+				dialog.getBidType()
+			)
+		end
 	end)	
+	
+	-- Methods
+	-- Retrieve the seleted bidType if applicable
+	dialog.getBidType = function()
+		local children = {bidTypeFrame:GetChildren()}
+		for i,v in pairs(children) do
+			if self:View_GetFlag(v, 'selected') then
+				if string.find(v.name, 'Bid%a+') then				
+					return string.sub(v.name, 4)
+				end
+			end
+		end
+	end	
+	
 	-- Color redraw
 	self:View_UpdateColor(frame)
 	return dialog
@@ -124,6 +151,12 @@ function kLoot:View_BidDialog_CreateItemFrame(name, item, parent)
 	if name == 'Auction' then tooltipFlip = true end
 	
 	local frame = self:View_Frame_Create(('%sItem'):format(name), parent, 300, 150)
+	frame.item = item
+	-- Methods
+	-- Retrieve the item for the current Item Frame.
+	frame.getItems = function()
+		return {frame.item}
+	end
 	if name == 'Current' then
 		frame:SetPoint('TOPLEFT', (parent:GetWidth() / 3) * 1 - (frame:GetWidth() / 2), -15) -- Left third	
 	elseif name == 'Auction' then

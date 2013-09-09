@@ -35,6 +35,31 @@ function kLoot:Client_OnAuctionCreate(sender, isClient, id, itemId, raidId, dura
 	kLoot:Auction_Create(itemId, raidId, id, duration, isClient)
 end
 
+--[[ Bid cancelled
+]]
+function kLoot:Client_OnBidCancel(sender, isClient, id, auctionId)
+	kLoot:Debug('Client_OnBidCancel', sender, id, 3)
+	-- Ignore self
+	if kLoot:Utility_IsSelf(sender) then return end
+	-- Validate id
+	if not id then
+		kLoot:Error('Client_OnBidCancel', 'Bid cancellation sent with invalid id.')
+		return
+	end
+	-- If bid doesn't exist, don't proceed
+	if not kLoot:Bid_Get(id, auctionId) then
+		kLoot:Debug('Client_OnBidCancel', ("Bid [%s] doesn't exist, no cancel needed."):format(id), 2)
+		return
+	end
+	-- Validate player
+	if not kLoot:Bid_IsFromPlayer(id, auctionId, sender) then
+		kLoot:Error('Client_OnBidCancel', 'Cannot cancel Bid not owned by sending player.')
+		return
+	end	
+	-- Cancel bid
+	kLoot:Bid_Cancel(id, auctionId, isClient)
+end
+
 --[[ Bid receieved
 ]]
 function kLoot:Client_OnBidCreate(sender, isClient, id, auctionId, items, player, bidType, specialization)
@@ -52,7 +77,7 @@ function kLoot:Client_OnBidCreate(sender, isClient, id, auctionId, items, player
 		return
 	end
 	-- Create new entry for client
-	kLoot:Bid_Create(auctionId, id, items, player, bidType, specialization, isClient)	
+	kLoot:Bid_Create(id, auctionId, items, player, bidType, specialization, isClient)	
 end
 
 --[[ Raid create

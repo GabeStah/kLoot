@@ -13,9 +13,35 @@ Get: Retrieve object
 Update: Update values of object
 ]]
 
+--[[ Cancel a bid
+]]
+function kLoot:Bid_Cancel(bid, auction, isClient)
+	auction = self:Auction_Get(auction)
+	if not auction then
+		self:Error('Bid_Cancel', 'Cannot cancel bid for invalid Auction.')
+		return
+	end
+	bid = self:Bid_Get(bid, auction)
+	if not bid then
+		self:Error('Bid_Cancel', 'Cannot cancel bid for invalid Bid.')
+		return
+	end
+	-- Destroy bid entry
+	for i,v in pairs(auction.bids) do
+		if v.id == bid.id then
+			tremove(auction.bids, i)
+			break
+		end
+	end
+	if not isClient then
+		-- Cancel message to others
+		self:Comm_BidCancel(bid.id, auction.id)
+	end	
+end
+
 --[[ Create new bid
 ]]
-function kLoot:Bid_Create(auction, id, items, player, bidType, specialization, isClient)
+function kLoot:Bid_Create(id, auction, items, player, bidType, specialization, isClient)
 	auction = self:Auction_Get(auction)
 	if not auction then
 		self:Error('Bid_Create', 'Cannot generate bid for nil auction.')
@@ -48,12 +74,6 @@ function kLoot:Bid_Create(auction, id, items, player, bidType, specialization, i
 	self:Debug('Bid_Create', 'Bid creation complete.', id, 3)
 end
 
---[[ Delete auction
-]]
-function kLoot:Bid_Delete(bid)
-
-end
-
 --[[ Destroy auction
 ]]
 function kLoot:Bid_Destroy(bid)
@@ -64,12 +84,14 @@ end
 ]]
 function kLoot:Bid_Get(bid, auction)
 	auction = self:Auction_Get(auction)
+	--[[
 	if not bid then -- assume most recent bid of most recent auction
 		if not auction then return end
 		if #auction.bids and (#auction.bids > 0) then
 			return self:Bid_Get(auction.bids[#auction.bids].id)
 		end
 	end
+	]]
 	if type(bid) == 'number' then
 		self:Debug('Bid_Get', 'type(bid) == number', bid, 1)
 		bid = tostring(bid)
@@ -116,4 +138,13 @@ function kLoot:Bid_ByPlayer(auction, player)
 			return v
 		end
 	end
+end
+
+--[[ Determine if bid is from player
+]]
+function kLoot:Bid_IsFromPlayer(bid, auction, player)
+	bid = self:Bid_Get(bid, auction)
+	if not bid then return end
+	player = player or UnitName('player')
+	return (bid.player == player)
 end

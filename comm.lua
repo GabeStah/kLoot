@@ -12,6 +12,13 @@ function kLoot:Comm_AuctionCreate(id, itemId, raidId, duration)
 	self:Comm_Send('AuctionCreate', 'c', 'RAID', id, itemId, raidId, duration)
 end
 
+--[[ Trigger when Bid is cancelled
+]]
+function kLoot:Comm_BidCancel(id, auctionId)
+	if not id then return end
+	self:Comm_Send('BidCancel', 'c', 'RAID', id, auctionId)
+end
+
 --[[ Trigger when auction is created
 ]]
 function kLoot:Comm_BidCreate(id, auctionId, items, player, bidType, specialization)
