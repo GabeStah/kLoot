@@ -21,9 +21,9 @@ end
 
 --[[ Trigger when auction is created
 ]]
-function kLoot:Comm_BidCreate(id, auctionId, items, player, bidType, specialization)
+function kLoot:Comm_BidCreate(id, auctionId, items, player, bidType, specialization, flags)
 	if not id or not self:Bid_Get(id, auctionId) or not player or not bidType then return end
-	self:Comm_Send('BidCreate', 'c', 'RAID', id, auctionId, items, player, bidType, specialization)
+	self:Comm_Send('BidCreate', 'c', 'RAID', id, auctionId, items, player, bidType, specialization, flags)
 end
 
 --[[ Retrieve the prefix valid

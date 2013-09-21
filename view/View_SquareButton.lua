@@ -37,6 +37,10 @@ function kLoot:View_SquareButton_Create(name, parent, headerText, subText, defau
 			bottomText:SetFont(path, size)
 		end
 	end	
+	frame.setText = function(text)
+		if not text then return end
+		topText:SetText(text)
+	end
 	
 	frame:ClearAllPoints()
 	frame:SetAllPoints()

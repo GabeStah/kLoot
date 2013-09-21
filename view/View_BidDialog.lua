@@ -16,7 +16,7 @@ function kLoot:View_BidDialog_Create(auction)
 	dialog:SetPoint('TOP', 0, -100)
 	dialog:Show()	
 	dialog.auctionId = auction.id
-			
+	
 	-- CURRENT
 	local currentItem = self:Item_GetCurrentItem(auction.itemLink)
 	local currentItemFrame = self:View_BidDialog_CreateItemFrame('Current', currentItem, dialog)
@@ -35,6 +35,9 @@ function kLoot:View_BidDialog_Create(auction)
 	
 	mainspecBidSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('MainspecBid', 'OnMouseDown', dialog.auctionId, 2)
+		if self:Bid_IsUpdated(self:Bid_ByPlayer(dialog.auctionId), dialog.auctionId, dialog.generateBidSettings()) then
+			self:Debug('MainspecBid', 'OnMouseDown', 'Bid_IsUpdated == true', 2)
+		end
 	end)
 	
 	-- offspec bid
@@ -44,6 +47,9 @@ function kLoot:View_BidDialog_Create(auction)
 	
 	offspecBidSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('OffspecBid', 'OnMouseDown', dialog.auctionId, 2)
+		if self:Bid_IsUpdated(self:Bid_ByPlayer(dialog.auctionId), dialog.auctionId, dialog.generateBidSettings()) then
+			self:Debug('OffspecBid', 'OnMouseDown', 'Bid_IsUpdated == true', 2)
+		end
 	end)
 	
 	-- rot bid
@@ -53,6 +59,9 @@ function kLoot:View_BidDialog_Create(auction)
 	
 	rotBidSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('RotBid', 'OnMouseDown', dialog.auctionId, 2)
+		if self:Bid_IsUpdated(self:Bid_ByPlayer(dialog.auctionId), dialog.auctionId, dialog.generateBidSettings()) then
+			self:Debug('RotBid', 'OnMouseDown', 'Bid_IsUpdated == true', 2)
+		end
 	end)
 	
 	-- FLAGS FRAME
@@ -66,6 +75,9 @@ function kLoot:View_BidDialog_Create(auction)
 	
 	flagBISSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('BISFlag', 'OnMouseDown', dialog.auctionId, 2)
+		if self:Bid_IsUpdated(self:Bid_ByPlayer(dialog.auctionId), dialog.auctionId, dialog.generateBidSettings()) then
+			self:Debug('BISFlag', 'OnMouseDown', 'Bid_IsUpdated == true', 2)
+		end
 	end)
 	
 	-- Set
@@ -75,6 +87,9 @@ function kLoot:View_BidDialog_Create(auction)
 	
 	flagSetSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('SetFlag', 'OnMouseDown', dialog.auctionId, 2)
+		if self:Bid_IsUpdated(self:Bid_ByPlayer(dialog.auctionId), dialog.auctionId, dialog.generateBidSettings()) then
+			self:Debug('SetFlag', 'OnMouseDown', 'Bid_IsUpdated == true', 2)
+		end
 	end)
 	
 	-- Transmog
@@ -85,26 +100,27 @@ function kLoot:View_BidDialog_Create(auction)
 	
 	flagTransmogSquareButton:addEvent('OnMouseDown', function()
 		self:Debug('TransmogFlag', 'OnMouseDown', dialog.auctionId, 2)
-	end)
-	
-	-- Cancel button
-	local cancelButton = self:View_SquareButton_Create('Cancel', dialog, 'Cancel')
-	cancelButton:ClearAllPoints()
-	cancelButton:SetPoint('BOTTOMLEFT')
-	cancelButton:SetWidth(150)
-	
-	cancelButton:deleteEvents('OnMouseDown')
-	
-	cancelButton:addEvent('OnMouseDown', function()
-		self:Debug('Cancel', 'OnMouseDown', dialog.auctionId, 2)
-		local bid = self:Bid_ByPlayer(auction)
-		if bid then
-			self:Bid_Cancel(bid, auction)
+		if self:Bid_IsUpdated(self:Bid_ByPlayer(dialog.auctionId), dialog.auctionId, dialog.generateBidSettings()) then
+			self:Debug('TransmogFlag', 'OnMouseDown', 'Bid_IsUpdated == true', 2)
 		end
 	end)
 	
+	-- Close button
+	local closeButton = self:View_SquareButton_Create('Close', dialog, 'Close')
+	closeButton:ClearAllPoints()
+	closeButton:SetPoint('BOTTOMLEFT')
+	closeButton:SetWidth(150)
+	
+	closeButton:deleteEvents('OnMouseDown')
+	
+	closeButton:addEvent('OnMouseDown', function()
+		self:Debug('Close', 'OnMouseDown', dialog.auctionId, 2)
+		dialog:Hide()
+	end)
+	
 	-- Bid button
-	local bidButton = self:View_SquareButton_Create('Bid', dialog, 'Bid')
+	-- Check if bid for this auction exists
+	local bidButton = self:View_SquareButton_Create('Bid', dialog, self:Bid_ByPlayer(auction) and 'Cancel' or 'Bid')
 	bidButton:ClearAllPoints()
 	bidButton:SetPoint('BOTTOMRIGHT')
 	bidButton:SetWidth(150)
@@ -113,19 +129,40 @@ function kLoot:View_BidDialog_Create(auction)
 	
 	bidButton:addEvent('OnMouseDown', function()
 		self:Debug('Bid', 'OnMouseDown', dialog.auctionId, 2)
-		if dialog.getBidType() then
+		-- Assign current bid
+		local currentBid = self:Bid_ByPlayer(dialog.auctionId)		
+		if currentBid then -- If current bid, process cancel
+			self:Bid_Cancel(
+				currentBid,
+				dialog.auctionId
+			)
+		elseif dialog.getBidType() then
 			-- Generate bid
 			self:Bid_Create(
 				nil, -- No id, new bid passed			
 				auction,
 				currentItemFrame.getItems(), -- Items table
 				nil, -- Current player
-				dialog.getBidType()
+				dialog.getBidType(),
+				nil, -- Current specialization
+				dialog.getFlags() -- Get current set flags
 			)
 		end
+		-- Update text
+		bidButton.setText(self:Bid_ByPlayer(dialog.auctionId) and 'Cancel' or 'Bid')		
 	end)	
 	
 	-- Methods
+	dialog.generateBidSettings = function()
+		local settings = {}
+		-- Assign current bid
+		local currentBid = self:Bid_ByPlayer(dialog.auctionId)			
+		settings.bidType = dialog.getBidType()
+		settings.specialization = currentBid and currentBid.specialization
+		settings.items = currentBid and currentBid.items
+		settings.flags = dialog.getFlags()
+		return settings
+	end
 	-- Retrieve the seleted bidType if applicable
 	dialog.getBidType = function()
 		local children = {bidTypeFrame:GetChildren()}
@@ -137,6 +174,22 @@ function kLoot:View_BidDialog_Create(auction)
 			end
 		end
 	end	
+	dialog.getFlags = function()
+		return {
+			BIS = dialog.hasFlag('BIS'),
+			Set = dialog.hasFlag('Set'),
+			Transmog = dialog.hasFlag('Transmog'),
+		}
+	end
+	-- Retrieve the selected flag if applicable
+	dialog.hasFlag = function(flagType)
+		local children = {flagsFrame:GetChildren()}
+		for i,v in pairs(children) do
+			if string.find(v.name, 'Flag%a+') and string.sub(v.name, 5) == flagType and self:View_GetFlag(v, 'selected') then
+				return true
+			end
+		end		
+	end
 	
 	-- Color redraw
 	self:View_UpdateColor(frame)

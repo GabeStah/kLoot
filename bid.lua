@@ -41,7 +41,7 @@ end
 
 --[[ Create new bid
 ]]
-function kLoot:Bid_Create(id, auction, items, player, bidType, specialization, isClient)
+function kLoot:Bid_Create(id, auction, items, player, bidType, specialization, flags, isClient)
 	auction = self:Auction_Get(auction)
 	if not auction then
 		self:Error('Bid_Create', 'Cannot generate bid for nil auction.')
@@ -59,7 +59,8 @@ function kLoot:Bid_Create(id, auction, items, player, bidType, specialization, i
 	id = id or self:Utility_GenerateUniqueId()
 	local bid = {
 		bidType = bidType,	
-		created = GetTime(),		
+		created = GetTime(),
+		flags = flags,
 		id = id,
 		items = items,
 		objectType = 'bid',		
@@ -69,7 +70,7 @@ function kLoot:Bid_Create(id, auction, items, player, bidType, specialization, i
 	}
 	tinsert(auction.bids, bid)
 	if not isClient then
-		self:Comm_BidCreate(id, auction.id, items, player, bidType, specialization)
+		self:Comm_BidCreate(id, auction.id, items, player, bidType, specialization, flags)
 	end
 	self:Debug('Bid_Create', 'Bid creation complete.', id, 3)
 end
@@ -147,4 +148,23 @@ function kLoot:Bid_IsFromPlayer(bid, auction, player)
 	if not bid then return end
 	player = player or UnitName('player')
 	return (bid.player == player)
+end
+
+--[[ Determine if flags have changed from Bid settings
+]]
+function kLoot:Bid_IsUpdated(bid, auction, settings)
+	bid = self:Bid_Get(bid, auction)
+	if not bid then return end
+	if not self:Utility_TableCompare(bid.items, settings.items) then
+		return true
+	end	
+	if settings.bidType ~= bid.bidType then
+		return true
+	end
+	if settings.specialization ~= bid.specialization then
+		return true
+	end
+	if not self:Utility_TableCompare(bid.flags, settings.flags) then
+		return true
+	end
 end

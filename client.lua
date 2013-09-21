@@ -62,8 +62,8 @@ end
 
 --[[ Bid receieved
 ]]
-function kLoot:Client_OnBidCreate(sender, isClient, id, auctionId, items, player, bidType, specialization)
-	kLoot:Debug('Client_OnBidCreate', sender, id, auctionId, items, player, bidType, specialization, 3)
+function kLoot:Client_OnBidCreate(sender, isClient, id, auctionId, items, player, bidType, specialization, flags)
+	kLoot:Debug('Client_OnBidCreate', sender, id, auctionId, items, player, bidType, specialization, flags, 3)
 	-- Ignore self
 	if kLoot:Utility_IsSelf(sender) then return end
 	-- Validate id
@@ -77,7 +77,7 @@ function kLoot:Client_OnBidCreate(sender, isClient, id, auctionId, items, player
 		return
 	end
 	-- Create new entry for client
-	kLoot:Bid_Create(id, auctionId, items, player, bidType, specialization, isClient)	
+	kLoot:Bid_Create(id, auctionId, items, player, bidType, specialization, flags, isClient)	
 end
 
 --[[ Raid create
