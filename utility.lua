@@ -113,6 +113,26 @@ function kLoot:Utility_IsSelf(player)
 	return (UnitName(player) == UnitName('player'))
 end
 
+--[[ Compare two tables
+]]
+function kLoot:Utility_MatchTables(tbl1, tbl2)
+	for k,v in pairs(tbl1) do
+		if (type(v) == 'table' and type(tbl2[k]) == 'table') then
+			if (not self:Utility_TableCompare(v, tbl2[k])) then return false end
+		else
+			if (v ~= tbl2[k]) then return false end
+		end
+	end
+	for k,v in pairs(tbl2) do
+		if (type(v) == 'table' and type(tbl1[k]) == 'table') then
+			if (not self:Utility_TableCompare(v, tbl1[k])) then return false end
+		else
+			if (v ~= tbl1[k]) then return false end
+		end
+	end
+	return true
+end
+
 --[[ Round a number
 ]]
 function kLoot:Utility_Round(value, decimal)
@@ -137,26 +157,6 @@ function kLoot:Utility_SplitString(subject, delimiter)
 	end
 	table.insert( result, string.sub( subject, from  ) )
 	return result
-end
-
---[[ Compare two tables
-]]
-function kLoot:Utility_TableCompare(tbl1, tbl2)
-	for k,v in pairs(tbl1) do
-		if (type(v) == 'table' and type(tbl2[k]) == 'table') then
-			if (not self:Utility_TableCompare(v, tbl2[k])) then return false end
-		else
-			if (v ~= tbl2[k]) then return false end
-		end
-	end
-	for k,v in pairs(tbl2) do
-		if (type(v) == 'table' and type(tbl1[k]) == 'table') then
-			if (not self:Utility_TableCompare(v, tbl1[k])) then return false end
-		else
-			if (v ~= tbl1[k]) then return false end
-		end
-	end
-	return true
 end
 
 --[[ Get difference in timestamps

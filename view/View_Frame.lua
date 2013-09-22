@@ -57,7 +57,7 @@ function kLoot:View_Frame_Create(name, parent, width, height, colorOrTexture)
 			end
 		end		
 	end
-	
+		
 	-- Destroy events
 	frame.events = nil
 	

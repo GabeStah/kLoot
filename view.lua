@@ -5,6 +5,30 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
+--[[ Find an object by name and optional type
+]]
+function kLoot:View_FindObject(parent, name, objectType)
+	if not name or not type(name) == 'string' or not parent then return end
+	if parent.name and parent.name == name then
+		if objectType then
+			if parent.objectType and parent.objectType == objectType then return parent end
+		else
+			return parent
+		end
+	end		
+	for i,v in ipairs({parent:GetChildren()}) do
+		if v.name and v.name == name then
+			if objectType then
+				if v.objectType and v.objectType == objectType then return v end
+			else
+				return v
+			end
+		end
+		local recursiveObject = self:View_FindObject(v, name, objectType)
+		if recursiveObject then return recursiveObject end
+	end	
+end
+
 --[[ Get the color option for a view object
 ]]
 function kLoot:View_GetColor(object, colorType)

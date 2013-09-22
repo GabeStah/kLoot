@@ -150,12 +150,12 @@ function kLoot:Bid_IsFromPlayer(bid, auction, player)
 	return (bid.player == player)
 end
 
---[[ Determine if flags have changed from Bid settings
+--[[ Determine if Bid data has been altered from UI settings
 ]]
 function kLoot:Bid_IsUpdated(bid, auction, settings)
 	bid = self:Bid_Get(bid, auction)
 	if not bid then return end
-	if not self:Utility_TableCompare(bid.items, settings.items) then
+	if not self:Utility_MatchTables(bid.items, settings.items) then
 		return true
 	end	
 	if settings.bidType ~= bid.bidType then
@@ -164,7 +164,7 @@ function kLoot:Bid_IsUpdated(bid, auction, settings)
 	if settings.specialization ~= bid.specialization then
 		return true
 	end
-	if not self:Utility_TableCompare(bid.flags, settings.flags) then
+	if not self:Utility_MatchTables(bid.flags, settings.flags) then
 		return true
 	end
 end
