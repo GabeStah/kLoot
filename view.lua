@@ -5,6 +5,22 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
+--[[ Disable an object (alpha & mouse)
+]]
+function kLoot:View_DisableObject(object)
+	if not object then return end
+	object:EnableMouse(false)
+	object:SetAlpha(self.alpha.disabled)	
+end
+
+--[[ Enable an object (alpha & mouse)
+]]
+function kLoot:View_EnableObject(object)
+	if not object then return end
+	object:EnableMouse(true)
+	object:SetAlpha(self.alpha.enabled)	
+end
+
 --[[ Find an object by name and optional type
 ]]
 function kLoot:View_FindObject(parent, name, objectType)

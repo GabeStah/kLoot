@@ -80,6 +80,28 @@ function kLoot:Client_OnBidCreate(sender, isClient, id, auctionId, items, player
 	kLoot:Bid_Create(id, auctionId, items, player, bidType, specialization, flags, isClient)	
 end
 
+--[[ Bid Update receieved
+]]
+function kLoot:Client_OnBidUpdate(sender, isClient, id, auctionId, items, bidType, specialization, flags)
+	kLoot:Debug('Client_OnBidUpdate', sender, id, auctionId, items, bidType, specialization, flags, 3)
+	-- Ignore self
+	if kLoot:Utility_IsSelf(sender) then return end
+	-- Validate id
+	if not id then
+		kLoot:Error('Client_OnBidUpdate', 'Bid sent with invalid id.')
+		return
+	end
+	-- If bid exists, update
+	if kLoot:Bid_Get(id, auctionId) then
+		kLoot:Debug('Client_OnBidUpdate', 'Bid found, updating: ', id, 2)
+		kLoot:Bid_Update(id, auctionId, items, bidType, specialization, flags, isClient)
+	else -- If Bid doesn't exist, create
+		kLoot:Debug('Client_OnBidUpdate', 'Bid not found, creating: ', id, 2)
+		-- TODO: Request synchronization for auction if needed, and/or for Bid
+		--kLoot:Bid_Create(id, auctionId, items, sender, bidType, specialization, flags, isClient)
+	end
+end
+
 --[[ Raid create
 ]]
 function kLoot:Client_OnRaidCreate(sender, isClient, id)

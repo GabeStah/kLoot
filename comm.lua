@@ -5,7 +5,7 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kLoot = _G.kLoot
 
---[[ Trigger when auction is created
+--[[ Trigger when Auction is created
 ]]
 function kLoot:Comm_AuctionCreate(id, itemId, raidId, duration)
 	if not id or not self:Auction_Get(id) or not raidId or not itemId then return end
@@ -19,11 +19,18 @@ function kLoot:Comm_BidCancel(id, auctionId)
 	self:Comm_Send('BidCancel', 'c', 'RAID', id, auctionId)
 end
 
---[[ Trigger when auction is created
+--[[ Trigger when Bid is created
 ]]
 function kLoot:Comm_BidCreate(id, auctionId, items, player, bidType, specialization, flags)
 	if not id or not self:Bid_Get(id, auctionId) or not player or not bidType then return end
 	self:Comm_Send('BidCreate', 'c', 'RAID', id, auctionId, items, player, bidType, specialization, flags)
+end
+
+--[[ Trigger when Bid is updated
+]]
+function kLoot:Comm_BidUpdate(id, auctionId, items, bidType, specialization, flags)
+	if not id or not self:Bid_Get(id, auctionId) or not bidType then return end
+	self:Comm_Send('BidUpdate', 'c', 'RAID', id, auctionId, items, bidType, specialization, flags)
 end
 
 --[[ Retrieve the prefix valid

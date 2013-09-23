@@ -120,7 +120,29 @@ end
 
 --[[ Update bid
 ]]
-function kLoot:Bid_Update(bid)
+function kLoot:Bid_Update(bid, auction, items, bidType, specialization, flags, isClient)
+	auction = self:Auction_Get(auction)
+	if not auction then
+		self:Error('Bid_Update', 'Cannot update bid for nil auction.')
+		return
+	end
+	-- Check if bid exists
+	bid = self:Bid_Get(bid, auction)
+	if not bid then
+		self:Error('Bid_Update', 'Cannot update bid for nil bid.')
+		return
+	end
+	
+	-- Update settings
+	bid.bidType = bidType
+	bid.flags = flags
+	bid.items = items
+	bid.specialization = specialization
+
+	if not isClient then
+		self:Comm_BidUpdate(bid.id, auction.id, items, bidType, specialization, flags)
+	end
+	self:Debug('Bid_Update', 'Bid update complete.', bid.id, 3)
 end
 
 --[[ Add vote to bid

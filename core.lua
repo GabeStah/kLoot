@@ -54,8 +54,8 @@ function kLoot:OnInitialize()
 	self:InitializeTimers()
 	-- Comm Registration
 	self:Comm_Register()
-	-- Syncronization
-	self:Syncronize()
+	-- Synchronization
+	self:Synchronize()
 end
 
 function kLoot:InitializeSettings()
@@ -63,6 +63,10 @@ function kLoot:InitializeSettings()
 	self.minRequiredVersion = '0.0.100'
 	self.version = '0.0.100'	
 
+	self.alpha = {
+		disabled = 0.4,
+		enabled = 1
+	}
 	self.autoLootZoneSelected = 1
 	self.autoLootWhitelistItemSelected = 1
 	self.auctions = {}
@@ -286,7 +290,7 @@ end
 
 --[[ Sync settings
 ]]
-function kLoot:Syncronize()
+function kLoot:Synchronize()
 	-- if admin, send out role response
 	if self:Role_IsAdmin() then
 		self:Comm_RoleResponse()
