@@ -70,6 +70,7 @@ function kLoot:InitializeSettings()
 	self.autoLootZoneSelected = 1
 	self.autoLootWhitelistItemSelected = 1
 	self.auctions = {}
+	self.bidFlags = {'BIS', 'Set', 'Transmog'}	
 	self.bidTypes = {
 		mainspec = 'Mainspec',
 		offspec = 'Offspec',

@@ -163,6 +163,14 @@ function kLoot:Bid_ByPlayer(auction, player)
 	end
 end
 
+--[[ Get Bid.flag value
+]]
+function kLoot:Bid_GetFlag(bid, auction, flag)
+	bid = self:Bid_Get(bid, auction)
+	if not bid then return end
+	return bid.flags[flag]
+end
+
 --[[ Determine if bid is from player
 ]]
 function kLoot:Bid_IsFromPlayer(bid, auction, player)

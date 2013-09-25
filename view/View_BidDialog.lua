@@ -148,7 +148,11 @@ function kLoot:View_BidDialog_Create(auction)
 	end)
 	-- Update bidButton
 	self:View_BidDialog_UpdateBidButton()
-		
+	
+	-- Update selections
+	self:View_BidDialog_UpdateFlagSelection(self:Bid_ByPlayer(dialog.auctionId), dialog.auctionId)
+	self:View_BidDialog_UpdateBidTypeSelection(self:Bid_ByPlayer(dialog.auctionId))
+	
 	-- Color redraw
 	self:View_UpdateColor(frame)
 	return dialog
@@ -248,11 +252,11 @@ end
 --[[ Get the flag settings table
 ]]
 function kLoot:View_BidDialog_GetFlags()
-	return {
-		BIS = self:View_BidDialog_HasFlag('BIS'),
-		Set = self:View_BidDialog_HasFlag('Set'),
-		Transmog = self:View_BidDialog_HasFlag('Transmog'),
-	}
+	local data = {}
+	for i,v in pairs(self.bidFlags) do
+		data[v] = self:View_BidDialog_HasFlag(v)
+	end
+	return data
 end
 
 --[[ Determine if dialog window has flagType
@@ -275,6 +279,45 @@ function kLoot:View_BidDialog_IsBidUpdated()
 	if not dialog or not dialog.auctionId then return end
 	return self:Bid_IsUpdated(self:Bid_ByPlayer(dialog.auctionId), dialog.auctionId, self:View_BidDialog_GetBidSettings())
 end
+
+--[[ Set the selected bidType option
+]]
+function kLoot:View_BidDialog_UpdateBidTypeSelection(bid)
+	if not bid then return end
+	if not _G['kLootDialogBid'] then return end
+	local bidTypeFrame = self:View_FindObject(_G['kLootDialogBid'], 'BidType', 'Frame')
+	if not bidTypeFrame then return end
+	local children = {bidTypeFrame:GetChildren()}
+	for i,v in pairs(children) do
+		if string.find(v.name, 'Bid%a+') then
+			-- Bid type match
+			if bid.bidType == string.sub(v.name, 4) then
+				-- Set flag and exit
+				self:View_SetFlag(v, 'selected', true)
+				self:View_UpdateColor(v, 'OnMouseDown')
+				return
+			end
+		end
+	end	
+end
+
+--[[ Set the selected flag options
+]]
+function kLoot:View_BidDialog_UpdateFlagSelection(bid, auction)
+	if not _G['kLootDialogBid'] then return end
+	local flagsFrame = self:View_FindObject(_G['kLootDialogBid'], 'Flags', 'Frame')
+	local children = {flagsFrame:GetChildren()}
+	for i,v in pairs(children) do
+		if string.find(v.name, 'Flag%a+') then
+			-- Check if bid has flag
+			if self:Bid_GetFlag(bid, auction, string.sub(v.name, 5)) then
+				self:View_SetFlag(v, 'selected', true)
+				self:View_UpdateColor(v, 'OnMouseDown')
+			end
+		end		
+	end		
+end
+
 
 --[[ Update BidButton view
 ]]
