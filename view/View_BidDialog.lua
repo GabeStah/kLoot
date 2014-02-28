@@ -180,37 +180,12 @@ function kLoot:View_BidDialog_CreateCurrentItemSelectionFrame(name, item, parent
 	end)
 	frame:SetScript('OnLeave', function(self) 
 		
-	end)		
-	
-	local titleString = self:View_FontString_Create('Title', frame, strupper(name))
-	titleString:SetPoint('TOPLEFT')
-	titleString:SetPoint('TOPRIGHT')
-	
-	local itemString = self:View_FontString_Create('Name', frame, self:Item_Name(item), self:Color_Get(self:Item_ColorByRarity(self:Item_Rarity(item))))
-	itemString:ClearAllPoints()
-	itemString:SetPoint('LEFT')
-	itemString:SetPoint('RIGHT')
-	itemString:SetPoint('TOP', titleString, 'BOTTOM', 0, -10)
-	itemString.setFont(20) 
-	
-	local iconPath = self:Item_Icon(item)
-	local itemIcon = self:View_Icon_Create('Icon', frame, nil, nil, iconPath)
-	itemIcon:ClearAllPoints()
-	itemIcon:SetPoint('TOP', itemString, 'BOTTOM', 0, -10)
-	
-	itemIcon:SetScript('OnEnter', function(self)
-		kLoot:View_ItemTooltip(item, frame, 
-			tooltipFlip and 'TOPLEFT' or 'TOPRIGHT', 
-			tooltipFlip and 'TOPRIGHT' or 'TOPLEFT')
 	end)
-	itemIcon:SetScript('OnLeave', function(self) GameTooltip:Hide() end)	
 	
-	local itemLevel = self:View_FontString_Create('Level', frame, self:Item_Level(item))
-	itemLevel:ClearAllPoints()
-	itemLevel:SetPoint('LEFT')
-	itemLevel:SetPoint('RIGHT')
-	itemLevel:SetPoint('TOP', itemIcon, 'BOTTOM', 0, -10)
-	itemLevel.setFont(20)
+	-- ScrollFrame
+	local scrollFrame = self:View_ScrollFrame_Create('ScrollFrame', frame)
+	-- Update
+	self:View_ScrollFrame_Update(scrollFrame)
 	
 	return frame
 end

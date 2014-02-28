@@ -7,10 +7,10 @@ local kLoot = _G.kLoot
 
 --[[ Create a basic frame
 ]]
-function kLoot:View_Frame_Create(name, parent, width, height, colorOrTexture, inheritFrame)
+function kLoot:View_Frame_Create(name, parent, width, height, colorOrTexture, inheritFrame, frameType)
 	local fullName = self:View_Name(name, parent)
 	self:Debug('View_Frame_Create', 'fullName: ', fullName, 'parent: ', parent, 2)
-	local frame = _G[fullName] or CreateFrame('Frame', fullName, parent or UIParent, inheritFrame)
+	local frame = _G[fullName] or CreateFrame(frameType or 'Frame', fullName, parent or UIParent, inheritFrame)
 	frame.objectType = 'Frame'
 	frame.name = name
 	local width = width or 500
