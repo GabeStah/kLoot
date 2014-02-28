@@ -11,7 +11,7 @@ function kLoot:View_SquareCategoryButton_Create(name, parent, category, headerTe
 	self:Debug('View_SquareCategoryButton_Create', 'name: ', name, 'parent: ', parent, 2)
 	local frame = self:View_SquareButton_Create(name, parent, headerText, subText, defaultColor, selectedColor, hoverColor)
 	-- Flags
-	frame.objectType = 'SquareCategoryButton'	
+	frame.objectType = 'SquareCategoryButton'
 	
 	-- Events
 	frame:addEvent('OnMouseDown', function()

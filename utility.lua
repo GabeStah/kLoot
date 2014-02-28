@@ -49,6 +49,21 @@ function kLoot:Utility_FilterTable(table, filterFunc)
 	return table
 end
 
+--[[ Generate test data table
+]]
+function kLoot:Utility_GenerateTestData(columns, rows)
+	rows = rows or 5
+	columns = columns or 5
+	local data = {}
+	for row=1,rows do
+		data[row] = {}
+		for column=1,columns do
+			tinsert(data[row], ('%s'):format(self:Utility_GenerateUniqueId()))		
+		end
+	end
+	return data
+end
+
 --[[ Generate a unique identifier
 ]]
 function kLoot:Utility_GenerateUniqueId()
