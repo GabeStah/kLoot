@@ -12,13 +12,20 @@ function kLoot:Item_ColorByRarity(rarity)
 	return GetItemQualityColor(rarity)
 end
 
+--[[ Is equippable
+]]
+function kLoot:Item_Equippable(item)
+	item = self:Item_Id(item)
+	if not item then return end
+	return IsEquippableItem(item)
+end
+
 --[[ Get item equip location
 ]]
 function kLoot:Item_EquipLocation(item)
 	item = self:Item_Id(item)
 	if not item then return end
 	local location = select(9, GetItemInfo(item))
-	self:Debug('Item_EquipLocation', 'location: ', location, 'item: ', item, 2)
 	return location
 end
 
@@ -59,14 +66,6 @@ function kLoot:Item_GetCurrentItem(item)
 	end	
 end
 
---[[ Get list of current items to display
-]]
-function kLoot:Item_GetCurrentItemList(item)
-	item = self:Item_Id(item)
-	if not item then return end
-	-- TODO: Complete
-end
-
 --[[ Get itemId from an itemlink string
 ]]
 function kLoot:Item_GetIdFromLink(link)
@@ -76,6 +75,28 @@ function kLoot:Item_GetIdFromLink(link)
 	if not itemString then return end
 	local _, itemId = strsplit(":", itemString)	
 	return itemId
+end
+
+--[[ Get list of items similar to passed item
+]]
+function kLoot:Item_GetSimilarItems(item)
+	item = self:Item_Id(item)
+	if not item then return end
+	-- TODO: Complete
+	-- Get equipped items
+	local equipped1, equipped2 = self:Item_EquippedBySlot(self:Item_EquipLocation(item))
+	-- Get inventory items
+	local inventory = self:Utility_FilterTable(self:Inventory_ItemList('inventory'),
+		function(a)
+			return self:Item_Equippable(a) and (self:Item_EquipLocation(a) == self:Item_EquipLocation(item))
+		end
+	)
+	-- TEST
+	return inventory
+	-- END TEST
+	-- Get bank items (TODO: Version 1.0)
+	-- Get transmog items (TODO: Version 1.0)
+	
 end
 
 --[[ Retrieve the slot name from the slot number

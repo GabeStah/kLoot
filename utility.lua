@@ -39,6 +39,16 @@ function kLoot:Utility_DestroyTable(table)
 	for i,v in pairs(table) do table[i] = nil end
 end
 
+--[[ Filter the data of a table and return filtered results
+]]
+function kLoot:Utility_FilterTable(table, filterFunc)
+	if not table or not type(table) == 'table' or not filterFunc then return end
+	for i=#table,1,-1 do
+		if not filterFunc(table[i]) then tremove(table, i) end
+	end
+	return table
+end
+
 --[[ Generate a unique identifier
 ]]
 function kLoot:Utility_GenerateUniqueId()

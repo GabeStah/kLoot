@@ -177,7 +177,7 @@ function kLoot:InitializeSettings()
 		},
 	}
 	self.specializations = self:Utility_GetSpecializations()
-	self.uniqueIdLength = 8
+	self.uniqueIdLength = 8 -- Character length of unique ID strings
 	self.update = {}
 	self.update.auction = {} -- House update script for auctions
 	self.update.core = {} -- House update script for general purpose

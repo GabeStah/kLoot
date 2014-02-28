@@ -17,6 +17,7 @@ comm.lua
 events.lua
 guild.lua
 item.lua
+inventory.lua
 manual.lua
 raid.lua
 role.lua
