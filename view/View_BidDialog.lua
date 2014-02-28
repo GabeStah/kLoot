@@ -23,6 +23,9 @@ function kLoot:View_BidDialog_Create(auction)
 
 	local auctionItemFrame = self:View_BidDialog_CreateItemFrame('Auction', auction.itemLink, dialog)
 	
+	-- CURRENT POPOUT
+	local currentItemSelectionFrame = self:View_BidDialog_CreateCurrentItemSelectionFrame('Selection', auction.itemLink, currentItemFrame)
+	
 	-- BID TYPE FRAME
 	local bidTypeFrame = self:View_Frame_Create('BidType', dialog, self:View_Frame_GetWidth(dialog) * 0.7, 100,  {r = 1, g = 1, b = 0, a = 0.5})
 	bidTypeFrame:SetPoint('CENTER')
@@ -156,6 +159,60 @@ function kLoot:View_BidDialog_Create(auction)
 	-- Color redraw
 	self:View_UpdateColor(frame)
 	return dialog
+end
+
+--[[ Create a Current Item Selection frame for the BidDialog
+]]
+function kLoot:View_BidDialog_CreateCurrentItemSelectionFrame(name, item, parent)
+	if not name then return end
+	
+	local frame = self:View_Frame_Create(('%s'):format(name), parent, 300, 150, nil, 'GlowBoxTemplate')
+	frame.item = item
+	-- Methods
+	-- Retrieve the item for the current Item Frame.
+	frame.getItems = function()
+		return {frame.item}
+	end
+	frame:SetPoint('TOPRIGHT', parent, 'TOPLEFT', (parent:GetWidth() / 3) * 1 - (frame:GetWidth() / 2), -15) -- Left third	
+	
+	frame:SetScript('OnEnter', function(self)
+
+	end)
+	frame:SetScript('OnLeave', function(self) 
+		
+	end)		
+	
+	local titleString = self:View_FontString_Create('Title', frame, strupper(name))
+	titleString:SetPoint('TOPLEFT')
+	titleString:SetPoint('TOPRIGHT')
+	
+	local itemString = self:View_FontString_Create('Name', frame, self:Item_Name(item), self:Color_Get(self:Item_ColorByRarity(self:Item_Rarity(item))))
+	itemString:ClearAllPoints()
+	itemString:SetPoint('LEFT')
+	itemString:SetPoint('RIGHT')
+	itemString:SetPoint('TOP', titleString, 'BOTTOM', 0, -10)
+	itemString.setFont(20) 
+	
+	local iconPath = self:Item_Icon(item)
+	local itemIcon = self:View_Icon_Create('Icon', frame, nil, nil, iconPath)
+	itemIcon:ClearAllPoints()
+	itemIcon:SetPoint('TOP', itemString, 'BOTTOM', 0, -10)
+	
+	itemIcon:SetScript('OnEnter', function(self)
+		kLoot:View_ItemTooltip(item, frame, 
+			tooltipFlip and 'TOPLEFT' or 'TOPRIGHT', 
+			tooltipFlip and 'TOPRIGHT' or 'TOPLEFT')
+	end)
+	itemIcon:SetScript('OnLeave', function(self) GameTooltip:Hide() end)	
+	
+	local itemLevel = self:View_FontString_Create('Level', frame, self:Item_Level(item))
+	itemLevel:ClearAllPoints()
+	itemLevel:SetPoint('LEFT')
+	itemLevel:SetPoint('RIGHT')
+	itemLevel:SetPoint('TOP', itemIcon, 'BOTTOM', 0, -10)
+	itemLevel.setFont(20)
+	
+	return frame
 end
 
 --[[ Create an item frame for the BidDialog

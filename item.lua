@@ -78,11 +78,11 @@ function kLoot:Item_GetIdFromLink(link)
 end
 
 --[[ Get list of items similar to passed item
+TODO: COMPLETE (Version 1.0)
 ]]
 function kLoot:Item_GetSimilarItems(item)
 	item = self:Item_Id(item)
 	if not item then return end
-	-- TODO: Complete
 	-- Get equipped items
 	local equipped1, equipped2 = self:Item_EquippedBySlot(self:Item_EquipLocation(item))
 	-- Get inventory items
@@ -91,12 +91,12 @@ function kLoot:Item_GetSimilarItems(item)
 			return self:Item_Equippable(a) and (self:Item_EquipLocation(a) == self:Item_EquipLocation(item))
 		end
 	)
-	-- TEST
-	return inventory
-	-- END TEST
 	-- Get bank items (TODO: Version 1.0)
 	-- Get transmog items (TODO: Version 1.0)
-	
+	return {
+		equipped = {equipped1, equipped2}, 
+		inventory = inventory,
+	}	
 end
 
 --[[ Retrieve the slot name from the slot number
