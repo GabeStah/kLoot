@@ -41,7 +41,7 @@ function kLoot:View_Frame_Create(name, parent, width, height, colorOrTexture, in
 	function frame:deleteEvents(eventType)
 		if eventType and tContains(self.validEventTypes, eventType) then
 			if self.events and self.events[eventType] then
-				wipe(self.events[eventType])
+				self.events[eventType] = nil
 			end
 		end
 	end

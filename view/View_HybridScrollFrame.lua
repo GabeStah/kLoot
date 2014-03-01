@@ -10,10 +10,10 @@ local kLoot = _G.kLoot
 function kLoot:View_HybridScrollFrame_Create(name, parent, width, height, defaultColor)
 	self:Debug('View_HybridScrollFrame_Create', 'name: ', name, 'parent: ', parent, 2)
 	local frame = self:View_Frame_Create(name, parent, width, height, defaultColor, 'HybridScrollFrameTemplate', 'ScrollFrame')
-	
+	self:Debug('View_HybridScrollFrame_Create', 'GENERATED NAME: ', frame:GetName(), 3)
 	-- Events
 	frame:addEvent('OnEnter', function()
-		self:Debug('View_HybridScrollFrame_OnEnter', 2)
+		self:Debug('View_HybridScrollFrame_OnEnter', 3)
 	end)
 	
 	-- Flags
@@ -39,12 +39,8 @@ function kLoot:View_HybridScrollFrame_Create(name, parent, width, height, defaul
 	-- Color redraw
 	self:View_UpdateColor(frame)
 	
-	-- ScrollBar
-	frame.scrollBar = self:View_HybridScrollFrameScrollBar_Create('ScrollBar', frame)
 	--local scrollMax = height - 400
-	frame.scrollBar:SetOrientation("VERTICAL");
-	frame.scrollBar:SetSize(16, self:View_Frame_GetHeight(parent))
-	frame.scrollBar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
+	
 	--[[
 	frame.scrollBar:SetMinMaxValues(0, 5)
 	frame.scrollBar:SetValue(0)
@@ -57,24 +53,32 @@ function kLoot:View_HybridScrollFrame_Create(name, parent, width, height, defaul
 	frame:ClearAllPoints()
 	frame:SetAllPoints()
 
+	-- ScrollBar
+	frame.scrollBar = self:View_HybridScrollFrameScrollBar_Create('ScrollBar', frame)	
+	
 	return frame
 end
 
 --[[ Create a ScrollFrame ScrollBar
 ]]
 function kLoot:View_HybridScrollFrameScrollBar_Create(name, parent)
-	self:Debug('View_ScrollFrameScrollBar_Create', 'name: ', name, 'parent: ', parent, 2)
-	local frame = self:View_Frame_Create(name, parent, nil, nil, nil, 'HybridScrollBarTemplate', 'Slider')
-	parent.scrollBar = frame -- Set scrollBar to parent frame
+	self:Debug('View_ScrollFrameScrollBar_Create', 'name: ', name, 'parent: ', parent, 3)
+	local frame = self:View_Frame_Create(name, parent, 16, self:View_Frame_GetHeight(parent), nil, 'HybridScrollBarTemplate', 'Slider')
+	self:Debug('View_ScrollFrameScrollBar_Create', 'name: ', frame:GetName(), 3)
 	
-	-- scrollbar is just to the right of the scrollframe
-	--parent.scrollBar = CreateFrame("Slider","CKBIScrollFrameScrollBar",self.scrollFrame,"HybridScrollBarTemplate")
-	--parent.scrollBar:SetPoint("TOPLEFT",KeyBindingFrameScrollFrameScrollBar,"TOPLEFT",0,0)
-	--parent.scrollBar:SetPoint("BOTTOMRIGHT",KeyBindingFrameScrollFrameScrollBar,"BOTTOMRIGHT",1,0)
-	-- ScrollFrame creation
-	--parent.stepSize = 12*4 -- jump by 4 buttons on mousewheel
-	--parent.update = self.Update
-	--parent.scrollBar = frame
+	frame:SetOrientation("VERTICAL");
+	frame:ClearAllPoints()
+	frame:SetPoint('TOPRIGHT', parent, 'TOPRIGHT', 0, 0)
+	frame:SetValue(0)
+
+	--[[
+	frame.scrollBar:SetMinMaxValues(0, 5)
+	frame.scrollBar:SetValue(0)
+	frame.scrollBar:SetScript("OnValueChanged", function(self)
+		frame:SetVerticalScroll(self:GetValue())
+	end)
+	]]	
+	
 	-- Set up internal textures for the scrollbar, background and thumb texture
 	if not frame.bg then
 		frame.bg = frame:CreateTexture(nil, "BACKGROUND")
@@ -88,6 +92,8 @@ function kLoot:View_HybridScrollFrameScrollBar_Create(name, parent)
 		frame.thumb:SetSize(25, 25)
 		frame:SetThumbTexture(frame.thumb)
 	end	
+	
+	parent.scrollBar = frame -- Set scrollBar to parent frame
 	return frame
 end
 

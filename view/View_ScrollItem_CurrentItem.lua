@@ -12,6 +12,7 @@ function kLoot:View_ScrollItem_CurrentItem_Create(data, name, parent, width, hei
 	local frame = self:View_ScrollItem_Create(name, parent, width, height, defaultColor)
 
 	-- Events
+
 	-- Flags
 	frame.objectType = 'ScrollItem_CurrentItem'
 	

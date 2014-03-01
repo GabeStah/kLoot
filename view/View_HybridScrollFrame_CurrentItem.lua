@@ -10,11 +10,11 @@ local kLoot = _G.kLoot
 function kLoot:View_HybridScrollFrame_CurrentItem_Create(data, name, parent, width, height, defaultColor)
 	self:Debug('View_HybridScrollFrame_CurrentItem_Create', 'name: ', name, 'parent: ', parent, 2)
 	local frame = self:View_HybridScrollFrame_Create(name, parent, width, height, defaultColor, 'HybridScrollFrameTemplate', 'ScrollFrame')
-	
+
 	-- Events
 	frame:deleteEvents('OnEnter') -- Destroy previous OnEnter assignments
 	frame:addEvent('OnEnter', function()
-		self:Debug('View_HybridScrollFrame_CurrentItem_OnEnter', 2)
+		self:Debug('View_HybridScrollFrame_CurrentItem_OnEnter', 3)
 	end)
 	
 	-- Flags
@@ -55,6 +55,7 @@ function kLoot:View_HybridScrollFrame_CurrentItem_ScrollItems_Create(data, paren
 end
 
 function kLoot:View_HybridScrollFrame_CurrentItem_Update(frame)
+	self:Debug('UPDATE for View_HybridScrollFrame_CurrentItem_Update', 2)
 	self.currentItemTestData = self.currentItemTestData or self:Utility_GenerateTestData(3, 10)
 	self:View_HybridScrollFrame_CurrentItem_ScrollItems_Create(self.currentItemTestData, frame)
 	HybridScrollFrame_Update(frame, 20*5, 20)
