@@ -19,6 +19,7 @@ function kLoot:View_HybridScrollFrame_CurrentItem_Create(data, name, parent, wid
 	
 	-- Flags
 	frame.objectType = 'HybridScrollFrame_CurrentItem'	
+	frame.update = self:View_HybridScrollFrame_CurrentItem_Update(frame)
 	
 	-- Colors
 	
@@ -51,4 +52,10 @@ function kLoot:View_HybridScrollFrame_CurrentItem_ScrollItems_Create(data, paren
 		frame = self:View_ScrollItem_CurrentItem_Create(data, ('ScrollItem%d'):format(index), parent, self:View_Frame_GetWidth(parent), self:View_Frame_GetHeight(parent) / ROW_COUNT)
 		self:View_ScrollItem_Align(frame)
 	end
+end
+
+function kLoot:View_HybridScrollFrame_CurrentItem_Update(frame)
+	self.currentItemTestData = self.currentItemTestData or self:Utility_GenerateTestData(3, 10)
+	self:View_HybridScrollFrame_CurrentItem_ScrollItems_Create(self.currentItemTestData, frame)
+	HybridScrollFrame_Update(frame, 20*5, 20)
 end

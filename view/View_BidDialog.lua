@@ -186,7 +186,7 @@ function kLoot:View_BidDialog_CreateCurrentItemSelectionFrame(name, item, parent
 	--local scrollFrame = self:View_ScrollFrame_Create('ScrollFrame', frame)
 	-- Update
 	--self:View_ScrollFrame_Update(scrollFrame)
-	self.currentItemTestData = self.currentItemTestData or self:Utility_GenerateTestData(3)
+	self.currentItemTestData = self.currentItemTestData or self:Utility_GenerateTestData(3, 10)
 	-- ScrollItem
 	--local scrollFrame = self:View_ScrollItem_CurrentItem_Create(self.currentItemTestData, 'CurrentItem', frame, self:View_Frame_GetWidth(frame), self:View_Frame_GetHeight(frame) / 4)
 	

@@ -17,7 +17,11 @@ function kLoot:View_HybridScrollFrame_Create(name, parent, width, height, defaul
 	end)
 	
 	-- Flags
-	frame.objectType = 'HybridScrollFrame'	
+	frame.objectType = 'HybridScrollFrame'
+	frame.scrollOffset = 0
+	frame.stepSize = 20
+	frame.buttonHeight = 20
+	frame.update = self:View_HybridScrollFrame_Update(frame)
 	
 	-- Colors
 	self:View_SetColor(frame, 'default', defaultColor)
@@ -25,6 +29,12 @@ function kLoot:View_HybridScrollFrame_Create(name, parent, width, height, defaul
 	-- Texts
 	
 	-- Methods
+	frame.getScrollOffset = function(self)
+		return self.scrollOffset
+	end
+	frame.setScrollOffset = function(self, offset)
+		self.scrollOffset = offset
+	end
 	
 	-- Color redraw
 	self:View_UpdateColor(frame)
@@ -35,9 +45,9 @@ function kLoot:View_HybridScrollFrame_Create(name, parent, width, height, defaul
 	frame.scrollBar:SetOrientation("VERTICAL");
 	frame.scrollBar:SetSize(16, self:View_Frame_GetHeight(parent))
 	frame.scrollBar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
+	--[[
 	frame.scrollBar:SetMinMaxValues(0, 5)
 	frame.scrollBar:SetValue(0)
-	--[[
 	frame.scrollBar:SetScript("OnValueChanged", function(self)
 		frame:SetVerticalScroll(self:GetValue())
 	end)
@@ -79,4 +89,8 @@ function kLoot:View_HybridScrollFrameScrollBar_Create(name, parent)
 		frame:SetThumbTexture(frame.thumb)
 	end	
 	return frame
+end
+
+function kLoot:View_HybridScrollFrame_Update(frame)
+	HybridScrollFrame_Update(frame, 20*5, 20)
 end

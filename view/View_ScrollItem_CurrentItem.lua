@@ -14,7 +14,6 @@ function kLoot:View_ScrollItem_CurrentItem_Create(data, name, parent, width, hei
 	-- Events
 	-- Flags
 	frame.objectType = 'ScrollItem_CurrentItem'
-	frame.dataIndex = 1
 	
 	-- Colors
 	
@@ -54,7 +53,7 @@ end
 ]]
 function kLoot:View_ScrollItem_CurrentItem_Update(frame, data, offset)
 	if not frame or not frame.objectType then return end
-	offset = offset or 0
+	offset = offset or HybridScrollFrame_GetOffset(frame:GetParent())
 	self:Debug('CurrentItem_Update', 'frame.getScrollItemIndex', frame.getScrollItemIndex() + offset, 2)
 	self:View_ScrollItem_CurrentItemFrames_Create(frame, data[frame.getScrollItemIndex() + offset][1], data[frame.getScrollItemIndex() + offset][2], data[frame.getScrollItemIndex() + offset][3])
 end
